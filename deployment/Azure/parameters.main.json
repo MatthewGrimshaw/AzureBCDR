@@ -1,0 +1,31 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "vNetsArray": {
+        "value": [
+          {
+            "vnetName": "spoke1",
+            "vnetAddressPrefixes": ["10.1.0.0/24"],
+            "subnetName": "default",
+            "subnetAddressPrefix": "10.1.0.0/24",
+            "nsg": true
+          },
+          {
+            "vnetName": "spoke2",
+            "vnetAddressPrefixes": ["10.2.0.0/24"],
+            "subnetName": "default",
+            "subnetAddressPrefix": "10.2.0.0/24",
+            "nsg": true
+          },
+          {
+            "vnetName": "spoke3",
+            "vnetAddressPrefixes": ["10.3.0.0/24"],
+            "subnetName": "AzureBastionSubnet",
+            "subnetAddressPrefix": "10.3.0.0/24",
+            "nsg": false
+          }
+      ]
+    }
+  }
+}
