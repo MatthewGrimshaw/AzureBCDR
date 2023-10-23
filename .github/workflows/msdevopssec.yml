@@ -1,12 +1,9 @@
 name: MSDO windows-latest
 on:
   push:
-    branches:
-      - main
-
+    branches: [ "main", "*release*" ]
   pull_request:
-    branches:
-        - main
+    branches: [ "main" ]
 
 jobs:
   dfcDevOpsSecurity:

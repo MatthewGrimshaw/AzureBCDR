@@ -3,8 +3,7 @@
     
     on:
       push:
-        branches:
-          - main
+        branches: [ "main", "*release*" ]
         paths:
           - bicep/**
       pull_request:
