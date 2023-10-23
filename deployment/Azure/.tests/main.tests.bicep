@@ -1,7 +1,7 @@
 param location string = resourceGroup().location
 param vNetsArray array = [
   {
-    vnetName:  'psrulespoke1-PaaS'
+    vnetName:  'psrulespoke1-PaaSs'
     vnetAddressPrefixes: ['10.1.0.0/24']
     subnetName: 'default'
     subnetAddressPrefix: '10.1.0.0/24'
