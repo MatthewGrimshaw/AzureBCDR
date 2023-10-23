@@ -37,7 +37,7 @@ resource vnetNsg 'Microsoft.Network/virtualNetworks@2023-04-01' = if (nsg)  {
     }
     subnets: [
       {
-      name: 'default-${vnetName}'
+      name: subnetName
       properties: {
         addressPrefix: subnetAddressPrefix
         networkSecurityGroup: {
