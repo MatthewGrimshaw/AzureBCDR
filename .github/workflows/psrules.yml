@@ -3,7 +3,7 @@
     
     on:
       push:
-        branches: [ "main", "*release*" ]
+        branches: [ "main", "*release*", "*Release*" ]
         paths:
           -deployment/Azure/**
       pull_request:

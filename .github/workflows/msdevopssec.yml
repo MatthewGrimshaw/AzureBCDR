@@ -1,7 +1,7 @@
 name: MSDO windows-latest
 on:
   push:
-    branches: [ "main", "*release*" ]
+    branches: [ "main", "*release*", "*Release*" ]
   pull_request:
     branches: [ "main" ]
 
