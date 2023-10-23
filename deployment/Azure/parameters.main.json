@@ -1,0 +1,72 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "vNetsArray": {
+        "value": [
+          {
+            "vnetName": "spoke1-PaaS",
+            "vnetAddressPrefixes": ["10.1.0.0/24"],
+            "subnetName": "default",
+            "subnetAddressPrefix": "10.1.0.0/24",
+            "nsg": true
+          },
+          {
+            "vnetName": "spoke2-IaaS",
+            "vnetAddressPrefixes": ["10.2.0.0/24"],
+            "subnetName": "default",
+            "subnetAddressPrefix": "10.2.0.0/24",
+            "nsg": true
+          },
+          {
+            "vnetName": "spoke3-Bastion",
+            "vnetAddressPrefixes": ["10.3.0.0/24"],
+            "subnetName": "AzureBastionSubnet",
+            "subnetAddressPrefix": "10.3.0.0/24",
+            "nsg": false
+          }
+      ]
+    },
+      "firewallPolicyName": {
+        "value": "firewallPolicy"
+      },
+      "firewallName": {
+        "value": "AzFirewall"
+      },
+      "vWanName": {
+        "value": "vWan"
+      },
+      "vWanHubName": {
+        "value": "vWanHubWestEurope"
+      },
+      "vWanHubAddressPrefix": {
+        "value": "10.0.0.0/24"
+      },
+      "vaultName": {
+        "value": "AzRecoveryVault"
+     },
+     "recoveryVaultVNetName": {
+        "value": "spoke1-PaaS"
+     },
+     "recoveryVaultSubnetName": {
+        "value": "default"
+     },
+     "backupPoliciesArray": {
+      "value": [
+        {
+          "name" : "IaaS-GoldPolicy",
+          "service": "Gold"
+        },
+        {
+          "name" : "IaaS-SilverPolicy",
+          "service": "Silver"
+        },
+        {
+          "name" : "IaaS-BronzePolicy",
+          "service": "Bronze"
+        }
+      ]
+    }
+  }
+}
+
