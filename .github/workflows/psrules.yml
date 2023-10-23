@@ -5,7 +5,7 @@
       push:
         branches: [ "main", "*release*" ]
         paths:
-          - bicep/**
+          -deployment/Azure/**
       pull_request:
         branches:
           - main

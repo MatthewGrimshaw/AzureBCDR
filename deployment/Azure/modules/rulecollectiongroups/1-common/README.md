@@ -1,6 +1,6 @@
 # Common Management Plane Services
 
-This are top level common rules that apply to all Azure Management Plane traffic.
+These are top level common rules that apply to all Azure Management Plane traffic.
 
 - Allow use of [Azure KMS server for Windows activation](https://docs.microsoft.com/en-us/troubleshoot/azure/virtual-machines/custom-routes-enable-kms-activation)
 
@@ -28,6 +28,5 @@ This are top level common rules that apply to all Azure Management Plane traffic
             'SqlManagement'
             'Storage'
             'WindowsAdminCenter'
-
 
 - Allow URLS for Azure Site Recovery and Azure Backup
