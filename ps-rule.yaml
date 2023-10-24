@@ -9,4 +9,7 @@ rule:
 
 input:
   pathIgnore:
-    - 'deployment/Azure/main.bicep'
+    # Exclude module files
+    - 'deployment/**/*.bicep'
+      # Include test files for modules
+    - '!deployment/Azure/.tests/*.tests.bicep'
