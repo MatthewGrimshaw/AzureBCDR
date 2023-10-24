@@ -104,7 +104,7 @@ module recoveryVault 'modules/recoveryVault.bicep' = {
 }
 
 module backupPolicies 'modules/backupPolicy.bicep' = [for policy in backupPoliciesArray: {
-  name: policy.name
+  name: 'policy-${policy}${uniqueString(resourceGroup().id)}'
   params: {
     vaultName: 'AzRecoveryVault'
     location: location
