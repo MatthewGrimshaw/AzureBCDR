@@ -8,7 +8,7 @@ param vNetsArray array = [
     nsg: true
   }
 ]
-param resourceGroupName string = 'psruleResourceGroupName'
+
 param backupPoliciesArray array = [
   {
     name: 'psruleBackupPolicyName'
@@ -18,7 +18,7 @@ param backupPoliciesArray array = [
 
 module resourceGroup '../modules/resource-group.bicep' = {
   scope: subscription()
-  name: resourceGroupName
+  name: 'psrulesResourcegroupName'
   params: {
     resourceGroupName: 'psruleResourceGroupName'
     location: 'westeurope'
@@ -77,6 +77,9 @@ module vWanHub '../modules/vwan.bicep' = {
     vWanHubAddressPrefix: '10.0.0.1'
     vWanHubLocation: location
     vWanHubName: 'psruleVWANHubName'
+    tags:{
+      env: 'dev'
+      }
   }
 }
 

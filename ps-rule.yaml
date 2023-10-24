@@ -9,4 +9,4 @@ rule:
 
 input:
   pathIgnore:
-    - 'deployment/azure/main.bicep'
+    - 'deployment/Azure/main.bicep'
