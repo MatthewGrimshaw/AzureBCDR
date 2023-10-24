@@ -13,7 +13,7 @@ module resourceGroup '../modules/resource-group.bicep' = {
 }
 
 module vNets '../modules/vnet.bicep' = {
-  name: 'psrulespoke1-PaaS'
+  name: 'deploy-psrulespoke1-PaaS'
   params: {
     location: location
     vnetName: 'psrulespoke1-PaaS'

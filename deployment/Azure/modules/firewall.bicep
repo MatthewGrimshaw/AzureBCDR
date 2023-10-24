@@ -9,7 +9,6 @@ param firewallPolicy string
 param vWanHubName string
 param tags object
 
-
 resource vWanHub 'Microsoft.Network/virtualHubs@2021-02-01' existing = {
   name: vWanHubName
 }
@@ -35,5 +34,4 @@ resource azureFirewall 'Microsoft.Network/azureFirewalls@2020-05-01' = {
       id: vWanHub.id
     }
   }
-
 }

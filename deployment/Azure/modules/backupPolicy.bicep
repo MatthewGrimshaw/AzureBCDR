@@ -24,7 +24,7 @@ resource recoveryServicesVault 'Microsoft.RecoveryServices/vaults@2023-01-01' ex
 
 resource GoldBackupPolicy 'Microsoft.RecoveryServices/vaults/backupPolicies@2023-01-01' = if (service == 'Gold') {
   parent: recoveryServicesVault
-  name: backupPolicyName
+  name: 'Gold-${backupPolicyName}'
   location: location
   tags: tags
   properties: {
@@ -114,7 +114,7 @@ resource GoldBackupPolicy 'Microsoft.RecoveryServices/vaults/backupPolicies@2023
 
 resource SilverBackupPolicy 'Microsoft.RecoveryServices/vaults/backupPolicies@2023-01-01' = if (service == 'Silver') {
   parent: recoveryServicesVault
-  name: backupPolicyName
+  name: 'Silver-${backupPolicyName}'
   location: location
   tags: tags
   properties: {
@@ -190,7 +190,7 @@ resource SilverBackupPolicy 'Microsoft.RecoveryServices/vaults/backupPolicies@20
 
 resource BronzeBackupPolicy 'Microsoft.RecoveryServices/vaults/backupPolicies@2023-01-01' = if (service == 'Bronze') {
   parent: recoveryServicesVault
-  name: backupPolicyName
+  name: 'Bronze-${backupPolicyName}'
   location: location
   tags: tags
   properties: {

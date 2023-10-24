@@ -1,0 +1,3176 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.22.6.54827",
+      "templateHash": "3889995527994101677"
+    }
+  },
+  "parameters": {
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]"
+    },
+    "vNetsArray": {
+      "type": "array"
+    },
+    "firewallPolicyName": {
+      "type": "string"
+    },
+    "vWanName": {
+      "type": "string"
+    },
+    "vWanHubAddressPrefix": {
+      "type": "string"
+    },
+    "vWanHubName": {
+      "type": "string"
+    },
+    "firewallName": {
+      "type": "string"
+    },
+    "vaultName": {
+      "type": "string"
+    },
+    "recoveryVaultVNetName": {
+      "type": "string"
+    },
+    "recoveryVaultSubnetName": {
+      "type": "string"
+    },
+    "backupPoliciesArray": {
+      "type": "array"
+    },
+    "tags": {
+      "type": "object"
+    },
+    "alertingEmailAddress": {
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "copy": {
+        "name": "vNets",
+        "count": "[length(parameters('vNetsArray'))]"
+      },
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "[format('deploy-{0}', parameters('vNetsArray')[copyIndex()].vnetName)]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "vnetName": {
+            "value": "[parameters('vNetsArray')[copyIndex()].vnetName]"
+          },
+          "vnetAddressPrefixes": {
+            "value": "[parameters('vNetsArray')[copyIndex()].vnetAddressPrefixes]"
+          },
+          "subnetName": {
+            "value": "[parameters('vNetsArray')[copyIndex()].subnetName]"
+          },
+          "subnetAddressPrefix": {
+            "value": "[parameters('vNetsArray')[copyIndex()].subnetAddressPrefix]"
+          },
+          "nsg": {
+            "value": "[parameters('vNetsArray')[copyIndex()].nsg]"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.22.6.54827",
+              "templateHash": "1638343975547339306"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]"
+            },
+            "vnetName": {
+              "type": "string"
+            },
+            "vnetAddressPrefixes": {
+              "type": "array"
+            },
+            "subnetName": {
+              "type": "string"
+            },
+            "subnetAddressPrefix": {
+              "type": "string"
+            },
+            "nsg": {
+              "type": "bool"
+            },
+            "tags": {
+              "type": "object"
+            }
+          },
+          "resources": [
+            {
+              "condition": "[parameters('nsg')]",
+              "type": "Microsoft.Network/networkSecurityGroups",
+              "apiVersion": "2019-11-01",
+              "name": "[format('nsg-{0}', parameters('vnetName'))]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "securityRules": [
+                  {
+                    "name": "AzureResourceManager",
+                    "properties": {
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "443",
+                      "sourceAddressPrefix": "*",
+                      "destinationAddressPrefix": "AzureResourceManager",
+                      "access": "Allow",
+                      "priority": 110,
+                      "direction": "Outbound"
+                    }
+                  },
+                  {
+                    "name": "AzureBackup",
+                    "properties": {
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "443",
+                      "sourceAddressPrefix": "*",
+                      "destinationAddressPrefix": "AzureBackup",
+                      "access": "Allow",
+                      "priority": 120,
+                      "direction": "Outbound"
+                    }
+                  },
+                  {
+                    "name": "AzureSiteRecovery",
+                    "properties": {
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "443",
+                      "sourceAddressPrefix": "*",
+                      "destinationAddressPrefix": "AzureSiteRecovery",
+                      "access": "Allow",
+                      "priority": 130,
+                      "direction": "Outbound"
+                    }
+                  },
+                  {
+                    "name": "AzureSiteRecovery",
+                    "properties": {
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "443",
+                      "sourceAddressPrefix": "*",
+                      "destinationAddressPrefix": "AzureSiteRecovery",
+                      "access": "Allow",
+                      "priority": 140,
+                      "direction": "Outbound"
+                    }
+                  },
+                  {
+                    "name": "AzureStorage",
+                    "properties": {
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "443",
+                      "sourceAddressPrefix": "*",
+                      "destinationAddressPrefix": "AzureStorage",
+                      "access": "Allow",
+                      "priority": 150,
+                      "direction": "Outbound"
+                    }
+                  },
+                  {
+                    "name": "AzureMonitor",
+                    "properties": {
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "443",
+                      "sourceAddressPrefix": "*",
+                      "destinationAddressPrefix": "AzureMonitor",
+                      "access": "Allow",
+                      "priority": 160,
+                      "direction": "Outbound"
+                    }
+                  },
+                  {
+                    "name": "AzureKeyVault",
+                    "properties": {
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "443",
+                      "sourceAddressPrefix": "*",
+                      "destinationAddressPrefix": "AzureKeyVault.WestEurope",
+                      "access": "Allow",
+                      "priority": 170,
+                      "direction": "Outbound"
+                    }
+                  },
+                  {
+                    "name": "AzureDNS",
+                    "properties": {
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "443",
+                      "sourceAddressPrefix": "*",
+                      "destinationAddressPrefix": "AzurePlatformDNS",
+                      "access": "Allow",
+                      "priority": 180,
+                      "direction": "Outbound"
+                    }
+                  },
+                  {
+                    "name": "Deny-hop-outbound",
+                    "properties": {
+                      "protocol": "*",
+                      "sourcePortRange": "*",
+                      "destinationPortRanges": [
+                        "3389",
+                        "22"
+                      ],
+                      "sourceAddressPrefix": "VirtualNetwork",
+                      "destinationAddressPrefix": "*",
+                      "access": "Deny",
+                      "priority": 200,
+                      "direction": "Outbound"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "condition": "[parameters('nsg')]",
+              "type": "Microsoft.Network/virtualNetworks",
+              "apiVersion": "2023-04-01",
+              "name": "[format('{0}-withNsg', parameters('vnetName'))]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "addressSpace": {
+                  "addressPrefixes": "[parameters('vnetAddressPrefixes')]"
+                },
+                "subnets": [
+                  {
+                    "name": "[parameters('subnetName')]",
+                    "properties": {
+                      "addressPrefix": "[parameters('subnetAddressPrefix')]",
+                      "networkSecurityGroup": {
+                        "id": "[resourceId('Microsoft.Network/networkSecurityGroups', format('nsg-{0}', parameters('vnetName')))]"
+                      }
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', format('nsg-{0}', parameters('vnetName')))]"
+              ]
+            },
+            {
+              "condition": "[not(parameters('nsg'))]",
+              "type": "Microsoft.Network/virtualNetworks",
+              "apiVersion": "2023-04-01",
+              "name": "[parameters('vnetName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "addressSpace": {
+                  "addressPrefixes": "[parameters('vnetAddressPrefixes')]"
+                },
+                "subnets": [
+                  {
+                    "name": "[parameters('subnetName')]",
+                    "properties": {
+                      "addressPrefix": "[parameters('subnetAddressPrefix')]"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "bastion",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "vnetName": {
+            "value": "spoke3"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.22.6.54827",
+              "templateHash": "13455838139790699466"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]"
+            },
+            "bastionName": {
+              "type": "string",
+              "defaultValue": "bastion"
+            },
+            "vnetName": {
+              "type": "string",
+              "metadata": {
+                "description": "Virtual network name"
+              }
+            },
+            "publicIpName": {
+              "type": "string",
+              "defaultValue": "pip-bastion",
+              "metadata": {
+                "description": "The name of the Bastion public IP address"
+              }
+            },
+            "tags": {
+              "type": "object"
+            }
+          },
+          "variables": {
+            "subnetName": "AzureBastionSubnet"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/publicIPAddresses",
+              "apiVersion": "2022-01-01",
+              "name": "[parameters('publicIpName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "sku": {
+                "name": "Standard",
+                "tier": "Regional"
+              },
+              "properties": {
+                "publicIPAllocationMethod": "Static"
+              },
+              "zones": [
+                "1",
+                "2",
+                "3"
+              ]
+            },
+            {
+              "type": "Microsoft.Network/bastionHosts",
+              "apiVersion": "2023-04-01",
+              "name": "[parameters('bastionName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "sku": {
+                "name": "Standard"
+              },
+              "properties": {
+                "disableCopyPaste": false,
+                "dnsName": "string",
+                "enableFileCopy": true,
+                "enableIpConnect": true,
+                "enableKerberos": false,
+                "enableShareableLink": true,
+                "enableTunneling": true,
+                "ipConfigurations": [
+                  {
+                    "name": "IpConf",
+                    "properties": {
+                      "subnet": {
+                        "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', split(format('{0}/{1}', parameters('vnetName'), variables('subnetName')), '/')[0], split(format('{0}/{1}', parameters('vnetName'), variables('subnetName')), '/')[1])]"
+                      },
+                      "publicIPAddress": {
+                        "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIpName'))]"
+                      }
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIpName'))]"
+              ]
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "vNets"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "firewallPolicy",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "name": {
+            "value": "[parameters('firewallPolicyName')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.22.6.54827",
+              "templateHash": "9232363412775307979"
+            }
+          },
+          "parameters": {
+            "name": {
+              "type": "string"
+            },
+            "tier": {
+              "type": "string",
+              "defaultValue": "Standard",
+              "allowedValues": [
+                "Premium",
+                "Standard"
+              ]
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]"
+            },
+            "tags": {
+              "type": "object"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/firewallPolicies",
+              "apiVersion": "2021-05-01",
+              "name": "[parameters('name')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "sku": {
+                  "tier": "[parameters('tier')]"
+                },
+                "threatIntelMode": "Deny",
+                "dnsSettings": {
+                  "servers": [],
+                  "enableProxy": true
+                }
+              }
+            },
+            {
+              "type": "Microsoft.Resources/deployments",
+              "apiVersion": "2022-09-01",
+              "name": "ruleCollectionGroups-deployment",
+              "properties": {
+                "expressionEvaluationOptions": {
+                  "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                  "parentName": {
+                    "value": "[parameters('name')]"
+                  }
+                },
+                "template": {
+                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                  "contentVersion": "1.0.0.0",
+                  "metadata": {
+                    "_generator": {
+                      "name": "bicep",
+                      "version": "0.22.6.54827",
+                      "templateHash": "1433820810932642392"
+                    }
+                  },
+                  "parameters": {
+                    "parentName": {
+                      "type": "string"
+                    }
+                  },
+                  "resources": [
+                    {
+                      "type": "Microsoft.Resources/deployments",
+                      "apiVersion": "2022-09-01",
+                      "name": "rcg-common-deployment",
+                      "properties": {
+                        "expressionEvaluationOptions": {
+                          "scope": "inner"
+                        },
+                        "mode": "Incremental",
+                        "parameters": {
+                          "parentName": {
+                            "value": "[parameters('parentName')]"
+                          }
+                        },
+                        "template": {
+                          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                          "contentVersion": "1.0.0.0",
+                          "metadata": {
+                            "_generator": {
+                              "name": "bicep",
+                              "version": "0.22.6.54827",
+                              "templateHash": "4077887762804563422"
+                            }
+                          },
+                          "parameters": {
+                            "parentName": {
+                              "type": "string"
+                            }
+                          },
+                          "resources": [
+                            {
+                              "type": "Microsoft.Network/firewallPolicies/ruleCollectionGroups",
+                              "apiVersion": "2021-05-01",
+                              "name": "[format('{0}/{1}', parameters('parentName'), 'ManagementPlane')]",
+                              "properties": {
+                                "priority": 100,
+                                "ruleCollections": [
+                                  {
+                                    "name": "Allow-ManagementPlane-Network-Rules",
+                                    "priority": 101,
+                                    "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+                                    "action": {
+                                      "type": "Allow"
+                                    },
+                                    "rules": [
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "Azure-KMS-Service",
+                                        "description": "Allow traffic from all address spaces to Azure platform KMS Service",
+                                        "ipProtocols": [
+                                          "TCP"
+                                        ],
+                                        "sourceAddresses": [
+                                          "*"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [
+                                          "[format('kms.{0}', environment().suffixes.storage)]"
+                                        ],
+                                        "destinationPorts": [
+                                          "1688"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "time-windows",
+                                        "ipProtocols": [
+                                          "UDP"
+                                        ],
+                                        "destinationAddresses": [
+                                          "13.86.101.172"
+                                        ],
+                                        "sourceAddresses": [
+                                          "*"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationPorts": [
+                                          "123"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "ServiceTags",
+                                        "description": "Allow traffic from all address spaces to Azure Management Plane services",
+                                        "ipProtocols": [
+                                          "Any"
+                                        ],
+                                        "sourceAddresses": [
+                                          "*"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                          "ApplicationInsightsAvailability",
+                                          "AppService",
+                                          "AzureAdvancedThreatProtection",
+                                          "AzureArcInfrastructure",
+                                          "AzureAttestation",
+                                          "AzureBackup",
+                                          "AzureContainerRegistry",
+                                          "AzureDevOps",
+                                          "AzureMonitor",
+                                          "AzurePlatformDNS",
+                                          "AzurePlatformLKM",
+                                          "AzureSiteRecovery",
+                                          "AzureUpdateDelivery",
+                                          "EventHub",
+                                          "Sql",
+                                          "SqlManagement",
+                                          "Storage",
+                                          "WindowsAdminCenter"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                          "*"
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "name": "Allow-ManagementPlane-Application-Rules",
+                                    "priority": 102,
+                                    "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+                                    "action": {
+                                      "type": "Allow"
+                                    },
+                                    "rules": [
+                                      {
+                                        "ruleType": "ApplicationRule",
+                                        "name": "Http",
+                                        "description": "Allow traffic from all sources to Windows Update (http)",
+                                        "protocols": [
+                                          {
+                                            "protocolType": "Http",
+                                            "port": 80
+                                          }
+                                        ],
+                                        "fqdnTags": [
+                                          "WindowsUpdate"
+                                        ],
+                                        "webCategories": [],
+                                        "targetFqdns": [],
+                                        "targetUrls": [],
+                                        "terminateTLS": false,
+                                        "sourceAddresses": [
+                                          "*"
+                                        ],
+                                        "destinationAddresses": [],
+                                        "sourceIpGroups": []
+                                      },
+                                      {
+                                        "ruleType": "ApplicationRule",
+                                        "name": "Https",
+                                        "description": "Allow traffic from all sources to Windows Update (https)",
+                                        "protocols": [
+                                          {
+                                            "protocolType": "Https",
+                                            "port": 443
+                                          }
+                                        ],
+                                        "fqdnTags": [
+                                          "WindowsUpdate"
+                                        ],
+                                        "webCategories": [],
+                                        "targetFqdns": [],
+                                        "targetUrls": [],
+                                        "terminateTLS": false,
+                                        "sourceAddresses": [
+                                          "*"
+                                        ],
+                                        "destinationAddresses": [],
+                                        "sourceIpGroups": []
+                                      },
+                                      {
+                                        "ruleType": "ApplicationRule",
+                                        "name": "Azure-Storage",
+                                        "description": "Allow traffic from all sources to Azure-Storage",
+                                        "protocols": [
+                                          {
+                                            "protocolType": "Https",
+                                            "port": 443
+                                          },
+                                          {
+                                            "protocolType": "Http",
+                                            "port": 80
+                                          }
+                                        ],
+                                        "webCategories": [],
+                                        "targetFqdns": [
+                                          "[format('*.blob.{0}', environment().suffixes.storage)]"
+                                        ],
+                                        "targetUrls": [],
+                                        "terminateTLS": false,
+                                        "sourceAddresses": [
+                                          "*"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "ApplicationRule",
+                                        "name": "Authentication",
+                                        "description": "[format('Allow traffic from all sources to {0}', environment().authentication.loginEndpoint)]",
+                                        "protocols": [
+                                          {
+                                            "protocolType": "Https",
+                                            "port": 443
+                                          },
+                                          {
+                                            "protocolType": "Http",
+                                            "port": 80
+                                          }
+                                        ],
+                                        "webCategories": [],
+                                        "targetFqdns": [
+                                          "[format('{0}', environment().authentication.loginEndpoint)]"
+                                        ],
+                                        "targetUrls": [],
+                                        "terminateTLS": false,
+                                        "sourceAddresses": [
+                                          "*"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "ApplicationRule",
+                                        "name": "AzureSiteRecovery",
+                                        "description": "Allow traffic from all sources to *.hypervrecoverymanager.windowsazure.com",
+                                        "protocols": [
+                                          {
+                                            "protocolType": "Https",
+                                            "port": 443
+                                          },
+                                          {
+                                            "protocolType": "Http",
+                                            "port": 80
+                                          }
+                                        ],
+                                        "webCategories": [],
+                                        "targetFqdns": [
+                                          "*.hypervrecoverymanager.windowsazure.com"
+                                        ],
+                                        "targetUrls": [],
+                                        "terminateTLS": false,
+                                        "sourceAddresses": [
+                                          "*"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "ApplicationRule",
+                                        "name": "AzureServiceBus",
+                                        "description": "Allow traffic from all sources to *.servicebus.windows.net",
+                                        "protocols": [
+                                          {
+                                            "protocolType": "Https",
+                                            "port": 443
+                                          },
+                                          {
+                                            "protocolType": "Http",
+                                            "port": 80
+                                          }
+                                        ],
+                                        "webCategories": [],
+                                        "targetFqdns": [
+                                          "*.servicebus.windows.net"
+                                        ],
+                                        "targetUrls": [],
+                                        "terminateTLS": false,
+                                        "sourceAddresses": [
+                                          "*"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "ApplicationRule",
+                                        "name": "AzureRecoveryVault",
+                                        "description": "[format('Allow traffic from all sources to *.{0}', environment().suffixes.keyvaultDns)]",
+                                        "protocols": [
+                                          {
+                                            "protocolType": "Https",
+                                            "port": 443
+                                          },
+                                          {
+                                            "protocolType": "Http",
+                                            "port": 80
+                                          }
+                                        ],
+                                        "webCategories": [],
+                                        "targetFqdns": [
+                                          "[format('*.{0}', environment().suffixes.keyvaultDns)]"
+                                        ],
+                                        "targetUrls": [],
+                                        "terminateTLS": false,
+                                        "sourceAddresses": [
+                                          "*"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "ApplicationRule",
+                                        "name": "AzureMobilityAgent",
+                                        "description": "Allow traffic from all sources to *.automation.ext.azure.com",
+                                        "protocols": [
+                                          {
+                                            "protocolType": "Https",
+                                            "port": 443
+                                          },
+                                          {
+                                            "protocolType": "Http",
+                                            "port": 80
+                                          }
+                                        ],
+                                        "webCategories": [],
+                                        "targetFqdns": [
+                                          "*.automation.ext.azure.com"
+                                        ],
+                                        "targetUrls": [],
+                                        "terminateTLS": false,
+                                        "sourceAddresses": [
+                                          "*"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "ApplicationRule",
+                                        "name": "AzureBackup",
+                                        "description": "Allow traffic from all sources to Azure Backup",
+                                        "protocols": [
+                                          {
+                                            "protocolType": "Https",
+                                            "port": 443
+                                          },
+                                          {
+                                            "protocolType": "Http",
+                                            "port": 80
+                                          }
+                                        ],
+                                        "fqdnTags": [
+                                          "AzureBackup"
+                                        ],
+                                        "webCategories": [],
+                                        "targetFqdns": [],
+                                        "targetUrls": [],
+                                        "terminateTLS": false,
+                                        "sourceAddresses": [
+                                          "*"
+                                        ],
+                                        "destinationAddresses": [],
+                                        "sourceIpGroups": []
+                                      },
+                                      {
+                                        "ruleType": "ApplicationRule",
+                                        "name": "Windows Diagnostics",
+                                        "description": "Allow traffic from all sources to Windows Diagnostics",
+                                        "protocols": [
+                                          {
+                                            "protocolType": "Https",
+                                            "port": 443
+                                          },
+                                          {
+                                            "protocolType": "Http",
+                                            "port": 80
+                                          }
+                                        ],
+                                        "fqdnTags": [
+                                          "WindowsDiagnostics"
+                                        ],
+                                        "webCategories": [],
+                                        "targetFqdns": [],
+                                        "targetUrls": [],
+                                        "terminateTLS": false,
+                                        "sourceAddresses": [
+                                          "*"
+                                        ],
+                                        "destinationAddresses": [],
+                                        "sourceIpGroups": []
+                                      },
+                                      {
+                                        "ruleType": "ApplicationRule",
+                                        "name": "MAPS",
+                                        "description": "Allow traffic from all sources to Microsoft Active Protection Service",
+                                        "protocols": [
+                                          {
+                                            "protocolType": "Https",
+                                            "port": 443
+                                          },
+                                          {
+                                            "protocolType": "Http",
+                                            "port": 80
+                                          }
+                                        ],
+                                        "fqdnTags": [
+                                          "MicrosoftActiveProtectionService"
+                                        ],
+                                        "webCategories": [],
+                                        "targetFqdns": [],
+                                        "targetUrls": [],
+                                        "terminateTLS": false,
+                                        "sourceAddresses": [
+                                          "*"
+                                        ],
+                                        "destinationAddresses": [],
+                                        "sourceIpGroups": []
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "Microsoft.Resources/deployments",
+                      "apiVersion": "2022-09-01",
+                      "name": "rcg-hub-deployment",
+                      "properties": {
+                        "expressionEvaluationOptions": {
+                          "scope": "inner"
+                        },
+                        "mode": "Incremental",
+                        "parameters": {
+                          "parentName": {
+                            "value": "[parameters('parentName')]"
+                          }
+                        },
+                        "template": {
+                          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                          "contentVersion": "1.0.0.0",
+                          "metadata": {
+                            "_generator": {
+                              "name": "bicep",
+                              "version": "0.22.6.54827",
+                              "templateHash": "7469954203670380807"
+                            }
+                          },
+                          "parameters": {
+                            "parentName": {
+                              "type": "string"
+                            }
+                          },
+                          "resources": [
+                            {
+                              "type": "Microsoft.Network/firewallPolicies/ruleCollectionGroups",
+                              "apiVersion": "2020-11-01",
+                              "name": "[format('{0}/{1}', parameters('parentName'), 'Hub-specific')]",
+                              "properties": {
+                                "priority": 200,
+                                "ruleCollections": [
+                                  {
+                                    "name": "Allow-Hub-Network-Rules",
+                                    "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+                                    "priority": 201,
+                                    "action": {
+                                      "type": "Allow"
+                                    },
+                                    "rules": [
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "P2S-OnPrem-SQL",
+                                        "description": "Allow traffic from P2S VPN address spaces to a specific OnPrem IP",
+                                        "ipProtocols": [
+                                          "TCP"
+                                        ],
+                                        "sourceAddresses": [
+                                          "172.168.0.0/16"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                          "192.168.0.10"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                          "1433"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "P2S-OnPrem-WebApp",
+                                        "description": "Allow traffic from P2S VPN address spaces to a specific OnPrem IP",
+                                        "ipProtocols": [
+                                          "TCP"
+                                        ],
+                                        "sourceAddresses": [
+                                          "172.168.0.0/16"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                          "192.168.0.11"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                          "433"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "P2S-Spoke 1",
+                                        "description": "Allow traffic from P2S VPN address spaces to Spoke 1",
+                                        "ipProtocols": [
+                                          "TCP"
+                                        ],
+                                        "sourceAddresses": [
+                                          "172.168.0.0/16"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                          "10.1.0.0/22"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                          "*"
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Resources/deployments', 'rcg-common-deployment')]"
+                      ]
+                    },
+                    {
+                      "type": "Microsoft.Resources/deployments",
+                      "apiVersion": "2022-09-01",
+                      "name": "rcg-on-premises-deployment",
+                      "properties": {
+                        "expressionEvaluationOptions": {
+                          "scope": "inner"
+                        },
+                        "mode": "Incremental",
+                        "parameters": {
+                          "parentName": {
+                            "value": "[parameters('parentName')]"
+                          }
+                        },
+                        "template": {
+                          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                          "contentVersion": "1.0.0.0",
+                          "metadata": {
+                            "_generator": {
+                              "name": "bicep",
+                              "version": "0.22.6.54827",
+                              "templateHash": "8395332733735210593"
+                            }
+                          },
+                          "parameters": {
+                            "parentName": {
+                              "type": "string"
+                            }
+                          },
+                          "resources": [
+                            {
+                              "type": "Microsoft.Network/firewallPolicies/ruleCollectionGroups",
+                              "apiVersion": "2020-11-01",
+                              "name": "[format('{0}/{1}', parameters('parentName'), 'On-premises')]",
+                              "properties": {
+                                "priority": 300,
+                                "ruleCollections": [
+                                  {
+                                    "name": "Allow-onprem-Network-Rules",
+                                    "priority": 301,
+                                    "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+                                    "action": {
+                                      "type": "Allow"
+                                    },
+                                    "rules": [
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "ActiveDirectoryWebServices",
+                                        "description": "Active Directory Web Services (ADWS)",
+                                        "ipProtocols": [
+                                          "Tcp"
+                                        ],
+                                        "sourceAddresses": [
+                                          "192.168.0.0/24"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                          "10.4.0.0/22"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                          "9389"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "GlobalCatalog",
+                                        "description": "Global Catalog",
+                                        "ipProtocols": [
+                                          "Tcp"
+                                        ],
+                                        "sourceAddresses": [
+                                          "192.168.0.0/24"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                          "10.4.0.0/22"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                          "3268",
+                                          "3269"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "ICMP",
+                                        "description": "ICMP",
+                                        "ipProtocols": [
+                                          "ICMP"
+                                        ],
+                                        "sourceAddresses": [
+                                          "192.168.0.0/24"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                          "10.4.0.0/22"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                          "*"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "LDAPServer",
+                                        "description": "LDAP Server",
+                                        "ipProtocols": [
+                                          "UDP"
+                                        ],
+                                        "sourceAddresses": [
+                                          "192.168.0.0/24"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                          "10.4.0.0/22"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                          "389"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "LDAPSSL",
+                                        "description": "LDAP SSL",
+                                        "ipProtocols": [
+                                          "TCP"
+                                        ],
+                                        "sourceAddresses": [
+                                          "192.168.0.0/24"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                          "10.4.0.0/22"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                          "636"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "IPsecISAKMP",
+                                        "description": "IPsec ISAKMP",
+                                        "ipProtocols": [
+                                          "UDP"
+                                        ],
+                                        "sourceAddresses": [
+                                          "192.168.0.0/24"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                          "10.4.0.0/22"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                          "500"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "NAT-T",
+                                        "description": "NAT-T",
+                                        "ipProtocols": [
+                                          "UDP"
+                                        ],
+                                        "sourceAddresses": [
+                                          "192.168.0.0/24"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                          "10.4.0.0/22"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                          "4500"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "RPC",
+                                        "description": "RPC",
+                                        "ipProtocols": [
+                                          "TCP"
+                                        ],
+                                        "sourceAddresses": [
+                                          "192.168.0.0/24"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                          "10.4.0.0/22"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                          "135"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "RPC-DynamicPort",
+                                        "description": "RPC Dynamic Ports",
+                                        "ipProtocols": [
+                                          "TCP"
+                                        ],
+                                        "sourceAddresses": [
+                                          "192.168.0.0/24"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                          "10.4.0.0/22"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                          "49152 - 65535"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "SMB",
+                                        "description": "SMB",
+                                        "ipProtocols": [
+                                          "TCP"
+                                        ],
+                                        "sourceAddresses": [
+                                          "192.168.0.0/24"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                          "10.4.0.0/22"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                          "445"
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "name": "Allow-onprem-Application-Rules",
+                                    "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+                                    "priority": 302,
+                                    "action": {
+                                      "type": "Allow"
+                                    },
+                                    "rules": [
+                                      {
+                                        "ruleType": "ApplicationRule",
+                                        "name": "On-premises to spoke001 ACI using http",
+                                        "description": "Allow on-premises network to connect to Azure Container Instance deployed to spoke001 using http on port 80",
+                                        "sourceAddresses": [
+                                          "192.168.0.0/24"
+                                        ],
+                                        "protocols": [
+                                          {
+                                            "port": 80,
+                                            "protocolType": "Http"
+                                          }
+                                        ],
+                                        "targetFqdns": [
+                                          "10.1.0.4"
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Resources/deployments', 'rcg-hub-deployment')]"
+                      ]
+                    },
+                    {
+                      "type": "Microsoft.Resources/deployments",
+                      "apiVersion": "2022-09-01",
+                      "name": "rcg-spoke1-deployment",
+                      "properties": {
+                        "expressionEvaluationOptions": {
+                          "scope": "inner"
+                        },
+                        "mode": "Incremental",
+                        "parameters": {
+                          "parentName": {
+                            "value": "[parameters('parentName')]"
+                          }
+                        },
+                        "template": {
+                          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                          "contentVersion": "1.0.0.0",
+                          "metadata": {
+                            "_generator": {
+                              "name": "bicep",
+                              "version": "0.22.6.54827",
+                              "templateHash": "4254764006361973367"
+                            }
+                          },
+                          "parameters": {
+                            "parentName": {
+                              "type": "string"
+                            }
+                          },
+                          "resources": [
+                            {
+                              "type": "Microsoft.Network/firewallPolicies/ruleCollectionGroups",
+                              "apiVersion": "2020-11-01",
+                              "name": "[format('{0}/{1}', parameters('parentName'), 'Spoke1')]",
+                              "properties": {
+                                "priority": 400,
+                                "ruleCollections": [
+                                  {
+                                    "name": "Allow-Spoke1-Network-Rules",
+                                    "priority": 401,
+                                    "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+                                    "action": {
+                                      "type": "Allow"
+                                    },
+                                    "rules": [
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "Spoke001 to on-premises",
+                                        "description": "Allow spoke001 to connect to on-premises network",
+                                        "ipProtocols": [
+                                          "Any"
+                                        ],
+                                        "sourceAddresses": [
+                                          "10.1.0.0/22"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                          "192.168.0.0/24"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                          "*"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "Spoke001 to Spoke002",
+                                        "description": "Allow spoke001 to connect to spoke002",
+                                        "ipProtocols": [
+                                          "Any"
+                                        ],
+                                        "sourceAddresses": [
+                                          "10.1.0.0/22"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                          "10.2.0.0/22"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                          "*"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "Spoke001 to Spoke003 on port 80",
+                                        "description": "Allow spoke001 to connect to spoke002",
+                                        "ipProtocols": [
+                                          "Any"
+                                        ],
+                                        "sourceAddresses": [
+                                          "10.1.0.0/22"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                          "10.3.0.0/22"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                          "80"
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "name": "Allow-Spoke1-Application-Rules",
+                                    "priority": 402,
+                                    "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+                                    "action": {
+                                      "type": "Allow"
+                                    },
+                                    "rules": [
+                                      {
+                                        "ruleType": "ApplicationRule",
+                                        "name": "Spoke001 to www.bing.com",
+                                        "description": "Allow spoke001 to connect to www.bing.com",
+                                        "sourceAddresses": [
+                                          "10.1.0.0/22"
+                                        ],
+                                        "protocols": [
+                                          {
+                                            "port": 443,
+                                            "protocolType": "Https"
+                                          }
+                                        ],
+                                        "targetFqdns": [
+                                          "www.bing.com"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "ApplicationRule",
+                                        "name": "Spoke001 to docs.microsoft.com",
+                                        "description": "Allow spoke001 to connect to docs.microsoft.com",
+                                        "sourceAddresses": [
+                                          "10.1.0.0/22"
+                                        ],
+                                        "protocols": [
+                                          {
+                                            "port": 443,
+                                            "protocolType": "Https"
+                                          }
+                                        ],
+                                        "targetFqdns": [
+                                          "docs.microsoft.com"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "ApplicationRule",
+                                        "name": "Spoke001 to github.com",
+                                        "description": "Allow spoke001 to connect to github.com",
+                                        "sourceAddresses": [
+                                          "10.1.0.0/22"
+                                        ],
+                                        "protocols": [
+                                          {
+                                            "port": 443,
+                                            "protocolType": "Https"
+                                          }
+                                        ],
+                                        "targetFqdns": [
+                                          "github.com"
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Resources/deployments', 'rcg-on-premises-deployment')]"
+                      ]
+                    },
+                    {
+                      "type": "Microsoft.Resources/deployments",
+                      "apiVersion": "2022-09-01",
+                      "name": "rcg-spoke2-deployment",
+                      "properties": {
+                        "expressionEvaluationOptions": {
+                          "scope": "inner"
+                        },
+                        "mode": "Incremental",
+                        "parameters": {
+                          "parentName": {
+                            "value": "[parameters('parentName')]"
+                          }
+                        },
+                        "template": {
+                          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                          "contentVersion": "1.0.0.0",
+                          "metadata": {
+                            "_generator": {
+                              "name": "bicep",
+                              "version": "0.22.6.54827",
+                              "templateHash": "2206074555010827959"
+                            }
+                          },
+                          "parameters": {
+                            "parentName": {
+                              "type": "string"
+                            }
+                          },
+                          "resources": [
+                            {
+                              "type": "Microsoft.Network/firewallPolicies/ruleCollectionGroups",
+                              "apiVersion": "2020-11-01",
+                              "name": "[format('{0}/{1}', parameters('parentName'), 'Spoke2')]",
+                              "properties": {
+                                "priority": 500,
+                                "ruleCollections": [
+                                  {
+                                    "name": "Allow-Spoke2-Network-Rules",
+                                    "priority": 501,
+                                    "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+                                    "action": {
+                                      "type": "Allow"
+                                    },
+                                    "rules": [
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "Spoke002 to Spoke001",
+                                        "description": "Allow spoke001 to connect to spoke002",
+                                        "ipProtocols": [
+                                          "Any"
+                                        ],
+                                        "sourceAddresses": [
+                                          "10.2.0.0/22"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                          "10.1.0.0/22"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                          "*"
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "name": "Allow-Spoke2-Application-Rules",
+                                    "priority": 502,
+                                    "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+                                    "action": {
+                                      "type": "Allow"
+                                    },
+                                    "rules": [
+                                      {
+                                        "ruleType": "ApplicationRule",
+                                        "name": "Spoke002 to github.com",
+                                        "description": "Allow spoke001 to connect to github.com",
+                                        "sourceAddresses": [
+                                          "10.2.0.0/22"
+                                        ],
+                                        "protocols": [
+                                          {
+                                            "port": 443,
+                                            "protocolType": "Https"
+                                          }
+                                        ],
+                                        "targetFqdns": [
+                                          "github.com"
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Resources/deployments', 'rcg-spoke1-deployment')]"
+                      ]
+                    },
+                    {
+                      "type": "Microsoft.Resources/deployments",
+                      "apiVersion": "2022-09-01",
+                      "name": "rcg-spoke3-deployment",
+                      "properties": {
+                        "expressionEvaluationOptions": {
+                          "scope": "inner"
+                        },
+                        "mode": "Incremental",
+                        "parameters": {
+                          "parentName": {
+                            "value": "[parameters('parentName')]"
+                          }
+                        },
+                        "template": {
+                          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                          "contentVersion": "1.0.0.0",
+                          "metadata": {
+                            "_generator": {
+                              "name": "bicep",
+                              "version": "0.22.6.54827",
+                              "templateHash": "16455613772335349155"
+                            }
+                          },
+                          "parameters": {
+                            "parentName": {
+                              "type": "string"
+                            }
+                          },
+                          "resources": [
+                            {
+                              "type": "Microsoft.Network/firewallPolicies/ruleCollectionGroups",
+                              "apiVersion": "2020-11-01",
+                              "name": "[format('{0}/{1}', parameters('parentName'), 'Spoke3')]",
+                              "properties": {
+                                "priority": 600,
+                                "ruleCollections": [
+                                  {
+                                    "name": "Allow-Spoke3-Network-Rules",
+                                    "priority": 601,
+                                    "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+                                    "action": {
+                                      "type": "Allow"
+                                    },
+                                    "rules": [
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "Spoke003 to Spoke001",
+                                        "description": "Allow spoke001 to connect to spoke002",
+                                        "ipProtocols": [
+                                          "Any"
+                                        ],
+                                        "sourceAddresses": [
+                                          "10.3.0.0/22"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                          "10.1.0.0/22"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                          "*"
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "name": "Allow-Spoke3-Application-Rules",
+                                    "priority": 602,
+                                    "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+                                    "action": {
+                                      "type": "Allow"
+                                    },
+                                    "rules": [
+                                      {
+                                        "ruleType": "ApplicationRule",
+                                        "name": "Spoke003 to github.com",
+                                        "description": "Allow spoke001 to connect to github.com",
+                                        "sourceAddresses": [
+                                          "10.3.0.0/22"
+                                        ],
+                                        "protocols": [
+                                          {
+                                            "port": 443,
+                                            "protocolType": "Https"
+                                          }
+                                        ],
+                                        "targetFqdns": [
+                                          "github.com"
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Resources/deployments', 'rcg-spoke2-deployment')]"
+                      ]
+                    },
+                    {
+                      "type": "Microsoft.Resources/deployments",
+                      "apiVersion": "2022-09-01",
+                      "name": "rcg-spoke4-deployment",
+                      "properties": {
+                        "expressionEvaluationOptions": {
+                          "scope": "inner"
+                        },
+                        "mode": "Incremental",
+                        "parameters": {
+                          "parentName": {
+                            "value": "[parameters('parentName')]"
+                          }
+                        },
+                        "template": {
+                          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                          "contentVersion": "1.0.0.0",
+                          "metadata": {
+                            "_generator": {
+                              "name": "bicep",
+                              "version": "0.22.6.54827",
+                              "templateHash": "11270711890232137386"
+                            }
+                          },
+                          "parameters": {
+                            "parentName": {
+                              "type": "string"
+                            }
+                          },
+                          "resources": [
+                            {
+                              "type": "Microsoft.Network/firewallPolicies/ruleCollectionGroups",
+                              "apiVersion": "2020-11-01",
+                              "name": "[format('{0}/{1}', parameters('parentName'), 'spoke4')]",
+                              "properties": {
+                                "priority": 700,
+                                "ruleCollections": [
+                                  {
+                                    "name": "Allow-spoke4-Network-Rules",
+                                    "priority": 701,
+                                    "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+                                    "action": {
+                                      "type": "Allow"
+                                    },
+                                    "rules": [
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "ActiveDirectoryWebServices",
+                                        "description": "Active Directory Web Services (ADWS)",
+                                        "ipProtocols": [
+                                          "Tcp"
+                                        ],
+                                        "sourceAddresses": [
+                                          "10.4.0.0/22"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                          "192.168.0.1",
+                                          "192.168.0.2",
+                                          "192.168.0.3",
+                                          "192.168.0.4"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                          "9389"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "GlobalCatalog",
+                                        "description": "Global Catalog",
+                                        "ipProtocols": [
+                                          "Tcp"
+                                        ],
+                                        "sourceAddresses": [
+                                          "10.4.0.0/22"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                          "192.168.0.1",
+                                          "192.168.0.2",
+                                          "192.168.0.3",
+                                          "192.168.0.4"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                          "3268",
+                                          "3269"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "ICMP",
+                                        "description": "ICMP",
+                                        "ipProtocols": [
+                                          "ICMP"
+                                        ],
+                                        "sourceAddresses": [
+                                          "10.4.0.0/22"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                          "192.168.0.1",
+                                          "192.168.0.2",
+                                          "192.168.0.3",
+                                          "192.168.0.4"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                          "*"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "LDAPServer",
+                                        "description": "LDAP Server",
+                                        "ipProtocols": [
+                                          "UDP"
+                                        ],
+                                        "sourceAddresses": [
+                                          "10.4.0.0/22"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                          "192.168.0.1",
+                                          "192.168.0.2",
+                                          "192.168.0.3",
+                                          "192.168.0.4"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                          "389"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "LDAPSSL",
+                                        "description": "LDAP SSL",
+                                        "ipProtocols": [
+                                          "TCP"
+                                        ],
+                                        "sourceAddresses": [
+                                          "10.4.0.0/22"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                          "192.168.0.1",
+                                          "192.168.0.2",
+                                          "192.168.0.3",
+                                          "192.168.0.4"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                          "636"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "IPsecISAKMP",
+                                        "description": "IPsec ISAKMP",
+                                        "ipProtocols": [
+                                          "UDP"
+                                        ],
+                                        "sourceAddresses": [
+                                          "10.4.0.0/22"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                          "192.168.0.1",
+                                          "192.168.0.2",
+                                          "192.168.0.3",
+                                          "192.168.0.4"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                          "500"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "NAT-T",
+                                        "description": "NAT-T",
+                                        "ipProtocols": [
+                                          "UDP"
+                                        ],
+                                        "sourceAddresses": [
+                                          "10.4.0.0/22"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                          "192.168.0.1",
+                                          "192.168.0.2",
+                                          "192.168.0.3",
+                                          "192.168.0.4"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                          "4500"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "RPC",
+                                        "description": "RPC",
+                                        "ipProtocols": [
+                                          "TCP"
+                                        ],
+                                        "sourceAddresses": [
+                                          "10.4.0.0/22"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                          "192.168.0.1",
+                                          "192.168.0.2",
+                                          "192.168.0.3",
+                                          "192.168.0.4"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                          "135"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "RPC-DynamicPort",
+                                        "description": "RPC Dynamic Ports",
+                                        "ipProtocols": [
+                                          "TCP"
+                                        ],
+                                        "sourceAddresses": [
+                                          "10.4.0.0/22"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                          "192.168.0.1",
+                                          "192.168.0.2",
+                                          "192.168.0.3",
+                                          "192.168.0.4"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                          "49152 - 65535"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "SMB",
+                                        "description": "SMB",
+                                        "ipProtocols": [
+                                          "TCP"
+                                        ],
+                                        "sourceAddresses": [
+                                          "10.4.0.0/22"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                          "192.168.0.1",
+                                          "192.168.0.2",
+                                          "192.168.0.3",
+                                          "192.168.0.4"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                          "445"
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Resources/deployments', 'rcg-spoke3-deployment')]"
+                      ]
+                    },
+                    {
+                      "type": "Microsoft.Resources/deployments",
+                      "apiVersion": "2022-09-01",
+                      "name": "rcg-spoke5-deployment",
+                      "properties": {
+                        "expressionEvaluationOptions": {
+                          "scope": "inner"
+                        },
+                        "mode": "Incremental",
+                        "parameters": {
+                          "parentName": {
+                            "value": "[parameters('parentName')]"
+                          }
+                        },
+                        "template": {
+                          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                          "contentVersion": "1.0.0.0",
+                          "metadata": {
+                            "_generator": {
+                              "name": "bicep",
+                              "version": "0.22.6.54827",
+                              "templateHash": "11158451828470361332"
+                            }
+                          },
+                          "parameters": {
+                            "parentName": {
+                              "type": "string"
+                            }
+                          },
+                          "resources": [
+                            {
+                              "type": "Microsoft.Network/firewallPolicies/ruleCollectionGroups",
+                              "apiVersion": "2020-11-01",
+                              "name": "[format('{0}/{1}', parameters('parentName'), 'spoke5-AzureVirtualDesktop')]",
+                              "properties": {
+                                "priority": 800,
+                                "ruleCollections": [
+                                  {
+                                    "name": "Allow-spoke5-Network-Rules",
+                                    "priority": 801,
+                                    "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+                                    "action": {
+                                      "type": "Allow"
+                                    },
+                                    "rules": [
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "GlobalCatalog",
+                                        "description": "Global Catalog",
+                                        "ipProtocols": [
+                                          "Tcp"
+                                        ],
+                                        "sourceAddresses": [
+                                          "10.5.0.0/22"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                          "10.4.0.0/22"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                          "3268",
+                                          "3269"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "LDAPServer",
+                                        "description": "LDAP Server",
+                                        "ipProtocols": [
+                                          "UDP"
+                                        ],
+                                        "sourceAddresses": [
+                                          "10.5.0.0/22"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                          "10.4.0.0/22"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                          "389"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "LDAPSSL",
+                                        "description": "LDAP SSL",
+                                        "ipProtocols": [
+                                          "TCP"
+                                        ],
+                                        "sourceAddresses": [
+                                          "10.5.0.0/22"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                          "10.4.0.0/22"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                          "636"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "DNS",
+                                        "description": "DNS",
+                                        "ipProtocols": [
+                                          "UDP",
+                                          "TCP"
+                                        ],
+                                        "sourceAddresses": [
+                                          "10.5.0.0/22"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                          "10.4.0.0/22"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                          "53"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "RPC",
+                                        "description": "RPC",
+                                        "ipProtocols": [
+                                          "TCP"
+                                        ],
+                                        "sourceAddresses": [
+                                          "10.5.0.0/22"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                          "10.4.0.0/22"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                          "135"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "RPC-DynamicPort",
+                                        "description": "RPC Dynamic Ports",
+                                        "ipProtocols": [
+                                          "TCP"
+                                        ],
+                                        "sourceAddresses": [
+                                          "10.4.0.0/22"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                          "10.5.0.0/22"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                          "49152 - 65535"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "SMB",
+                                        "description": "SMB",
+                                        "ipProtocols": [
+                                          "TCP"
+                                        ],
+                                        "sourceAddresses": [
+                                          "10.4.0.0/22"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                          "10.5.0.0/22"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                          "445"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "Kerberos",
+                                        "description": "Kerberos",
+                                        "ipProtocols": [
+                                          "TCP"
+                                        ],
+                                        "sourceAddresses": [
+                                          "10.4.0.0/22"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                          "10.5.0.0/22"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                          "88"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "W32Time",
+                                        "description": "W32Time",
+                                        "ipProtocols": [
+                                          "UDP"
+                                        ],
+                                        "sourceAddresses": [
+                                          "10.4.0.0/22"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                          "10.5.0.0/22"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                          "123"
+                                        ]
+                                      },
+                                      {
+                                        "ruleType": "NetworkRule",
+                                        "name": "ServiceTags",
+                                        "description": "Allow traffic from all address spaces to Azure Virtual Desktop",
+                                        "ipProtocols": [
+                                          "Any"
+                                        ],
+                                        "sourceAddresses": [
+                                          "*"
+                                        ],
+                                        "sourceIpGroups": [],
+                                        "destinationAddresses": [
+                                          "WindowsVirtualDesktop"
+                                        ],
+                                        "destinationIpGroups": [],
+                                        "destinationFqdns": [],
+                                        "destinationPorts": [
+                                          "*"
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "dependsOn": [
+                        "[resourceId('Microsoft.Resources/deployments', 'rcg-spoke4-deployment')]"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/firewallPolicies', parameters('name'))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "id": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Network/firewallPolicies', parameters('name'))]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "vWanHub",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "vWanName": {
+            "value": "[parameters('vWanName')]"
+          },
+          "vWanHubAddressPrefix": {
+            "value": "[parameters('vWanHubAddressPrefix')]"
+          },
+          "vWanHubLocation": {
+            "value": "[parameters('location')]"
+          },
+          "vWanHubName": {
+            "value": "[parameters('vWanHubName')]"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.22.6.54827",
+              "templateHash": "17034022344618306424"
+            }
+          },
+          "parameters": {
+            "vWanName": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]"
+            },
+            "vWanHubName": {
+              "type": "string"
+            },
+            "vWanHubLocation": {
+              "type": "string"
+            },
+            "vWanHubAddressPrefix": {
+              "type": "string"
+            },
+            "tags": {
+              "type": "object"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/virtualWans",
+              "apiVersion": "2021-02-01",
+              "name": "[parameters('vWanName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "allowBranchToBranchTraffic": true,
+                "allowVnetToVnetTraffic": true
+              }
+            },
+            {
+              "type": "Microsoft.Network/virtualHubs",
+              "apiVersion": "2021-02-01",
+              "name": "[parameters('vWanHubName')]",
+              "location": "[parameters('vWanHubLocation')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "virtualWan": {
+                  "id": "[resourceId('Microsoft.Network/virtualWans', parameters('vWanName'))]"
+                },
+                "addressPrefix": "[parameters('vWanHubAddressPrefix')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualWans', parameters('vWanName'))]"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "firewall",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "firewallName": {
+            "value": "[parameters('firewallName')]"
+          },
+          "firewallLocation": {
+            "value": "[parameters('location')]"
+          },
+          "firewallPolicy": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'firewallPolicy'), '2022-09-01').outputs.id.value]"
+          },
+          "vWanHubName": {
+            "value": "[parameters('vWanHubName')]"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.22.6.54827",
+              "templateHash": "4853454909801160"
+            }
+          },
+          "parameters": {
+            "firewallName": {
+              "type": "string"
+            },
+            "firewallLocation": {
+              "type": "string"
+            },
+            "tier": {
+              "type": "string",
+              "defaultValue": "Standard",
+              "allowedValues": [
+                "Premium",
+                "Standard"
+              ]
+            },
+            "firewallPolicy": {
+              "type": "string"
+            },
+            "vWanHubName": {
+              "type": "string"
+            },
+            "tags": {
+              "type": "object"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/azureFirewalls",
+              "apiVersion": "2020-05-01",
+              "name": "[parameters('firewallName')]",
+              "location": "[parameters('firewallLocation')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "sku": {
+                  "name": "AZFW_Hub",
+                  "tier": "[parameters('tier')]"
+                },
+                "firewallPolicy": {
+                  "id": "[parameters('firewallPolicy')]"
+                },
+                "hubIPAddresses": {
+                  "publicIPs": {
+                    "count": 1
+                  }
+                },
+                "virtualHub": {
+                  "id": "[resourceId('Microsoft.Network/virtualHubs', parameters('vWanHubName'))]"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', 'firewallPolicy')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "vWanDefaultRoutes",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "vWanHubName": {
+            "value": "[parameters('vWanHubName')]"
+          },
+          "firewallName": {
+            "value": "[parameters('firewallName')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.22.6.54827",
+              "templateHash": "8726560623524784848"
+            }
+          },
+          "parameters": {
+            "vWanHubName": {
+              "type": "string"
+            },
+            "firewallName": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/virtualHubs/routingIntent",
+              "apiVersion": "2023-04-01",
+              "name": "[format('{0}/{1}', parameters('vWanHubName'), 'routingIntent')]",
+              "properties": {
+                "routingPolicies": [
+                  {
+                    "destinations": [
+                      "Internet"
+                    ],
+                    "name": "Internet",
+                    "nextHop": "[resourceId('Microsoft.Network/azureFirewalls', parameters('firewallName'))]"
+                  },
+                  {
+                    "destinations": [
+                      "PrivateTraffic"
+                    ],
+                    "name": "PrivateTraffic",
+                    "nextHop": "[resourceId('Microsoft.Network/azureFirewalls', parameters('firewallName'))]"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', 'vWanHub')]"
+      ]
+    },
+    {
+      "copy": {
+        "name": "vWanNetConnections",
+        "count": "[length(parameters('vNetsArray'))]"
+      },
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "[format('connection-{0}', parameters('vNetsArray')[copyIndex()].vnetName)]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "vWanHubName": {
+            "value": "[parameters('vWanHubName')]"
+          },
+          "vNetName": {
+            "value": "[parameters('vNetsArray')[copyIndex()].vnetName]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.22.6.54827",
+              "templateHash": "12878386178443960439"
+            }
+          },
+          "parameters": {
+            "vWanHubName": {
+              "type": "string"
+            },
+            "vNetName": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/virtualHubs/hubVirtualNetworkConnections",
+              "apiVersion": "2020-05-01",
+              "name": "[format('{0}/{1}', parameters('vWanHubName'), format('connection-{0}', parameters('vNetName')))]",
+              "properties": {
+                "routingConfiguration": {
+                  "associatedRouteTable": {
+                    "id": "[resourceId('Microsoft.Network/virtualHubs/hubRouteTables', parameters('vWanHubName'), 'defaultRouteTable')]"
+                  },
+                  "propagatedRouteTables": {
+                    "labels": [
+                      "none"
+                    ],
+                    "ids": [
+                      {
+                        "id": "[resourceId('Microsoft.Network/virtualHubs/hubRouteTables', parameters('vWanHubName'), 'noneRouteTable')]"
+                      }
+                    ]
+                  }
+                },
+                "remoteVirtualNetwork": {
+                  "id": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vNetName'))]"
+                },
+                "allowHubToRemoteVnetTransit": true,
+                "allowRemoteVnetToUseHubVnetGateways": true,
+                "enableInternetSecurity": true
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', 'vWanHub')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "[parameters('vaultName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "vaultName": {
+            "value": "[parameters('vaultName')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "vNetName": {
+            "value": "[parameters('recoveryVaultVNetName')]"
+          },
+          "subnetName": {
+            "value": "[parameters('recoveryVaultSubnetName')]"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          },
+          "alertingEmailAddress": {
+            "value": "[parameters('alertingEmailAddress')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.22.6.54827",
+              "templateHash": "7718836860305785795"
+            }
+          },
+          "parameters": {
+            "vaultName": {
+              "type": "string",
+              "metadata": {
+                "description": "Name of the Vault"
+              }
+            },
+            "enableCRR": {
+              "type": "bool",
+              "defaultValue": true,
+              "metadata": {
+                "description": "Enable CRR (Works if vault has not registered any backup instance)"
+              }
+            },
+            "vaultStorageType": {
+              "type": "string",
+              "defaultValue": "GeoRedundant",
+              "allowedValues": [
+                "LocallyRedundant",
+                "GeoRedundant"
+              ],
+              "metadata": {
+                "description": "Change Vault Storage Type (Works if vault has not registered any backup instance)"
+              }
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "Location for all resources."
+              }
+            },
+            "vNetName": {
+              "type": "string"
+            },
+            "subnetName": {
+              "type": "string"
+            },
+            "tags": {
+              "type": "object"
+            },
+            "alertingEmailAddress": {
+              "type": "string"
+            }
+          },
+          "variables": {
+            "privateEndpointName": "RecoveryVaultPrivateEndpoint",
+            "privateDNSZoneName": "privatelink.we.backup.windowsazure.com",
+            "pvtEndpointDnsGroupName": "[format('{0}/privateEndpointDnsGroup', variables('privateEndpointName'))]",
+            "skuName": "RS0",
+            "skuTier": "Standard"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.RecoveryServices/vaults",
+              "apiVersion": "2023-01-01",
+              "name": "[parameters('vaultName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "sku": {
+                "name": "[variables('skuName')]",
+                "tier": "[variables('skuTier')]"
+              },
+              "properties": {
+                "monitoringSettings": {
+                  "azureMonitorAlertSettings": {
+                    "alertsForAllJobFailures": "Enabled"
+                  },
+                  "classicAlertSettings": {
+                    "alertsForCriticalOperations": "Disabled"
+                  }
+                },
+                "publicNetworkAccess": "Disabled"
+              }
+            },
+            {
+              "type": "Microsoft.RecoveryServices/vaults/replicationAlertSettings",
+              "apiVersion": "2022-10-01",
+              "name": "[format('{0}/{1}', parameters('vaultName'), 'replicationAlert')]",
+              "properties": {
+                "customEmailAddresses": [
+                  "[parameters('alertingEmailAddress')]"
+                ],
+                "locale": "en-US",
+                "sendToOwners": "Send"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.RecoveryServices/vaults', parameters('vaultName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Network/privateEndpoints",
+              "apiVersion": "2021-05-01",
+              "name": "[variables('privateEndpointName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "subnet": {
+                  "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vNetName'), parameters('subnetName'))]"
+                },
+                "privateLinkServiceConnections": [
+                  {
+                    "name": "[variables('privateEndpointName')]",
+                    "properties": {
+                      "privateLinkServiceId": "[resourceId('Microsoft.RecoveryServices/vaults', parameters('vaultName'))]",
+                      "groupIds": [
+                        "AzureBackup"
+                      ]
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.RecoveryServices/vaults', parameters('vaultName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Network/privateDnsZones",
+              "apiVersion": "2020-06-01",
+              "name": "[variables('privateDNSZoneName')]",
+              "location": "global",
+              "tags": "[parameters('tags')]",
+              "properties": {}
+            },
+            {
+              "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+              "apiVersion": "2020-06-01",
+              "name": "[format('{0}/{1}', variables('privateDNSZoneName'), format('{0}-link', variables('privateDNSZoneName')))]",
+              "location": "global",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "registrationEnabled": false,
+                "virtualNetwork": {
+                  "id": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vNetName'))]"
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', variables('privateDNSZoneName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+              "apiVersion": "2021-05-01",
+              "name": "[variables('pvtEndpointDnsGroupName')]",
+              "properties": {
+                "privateDnsZoneConfigs": [
+                  {
+                    "name": "config1",
+                    "properties": {
+                      "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', variables('privateDNSZoneName'))]"
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', variables('privateDNSZoneName'))]",
+                "[resourceId('Microsoft.Network/privateEndpoints', variables('privateEndpointName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.RecoveryServices/vaults/backupstorageconfig",
+              "apiVersion": "2022-02-01",
+              "name": "[format('{0}/{1}', parameters('vaultName'), 'vaultstorageconfig')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "storageModelType": "[parameters('vaultStorageType')]",
+                "crossRegionRestoreFlag": "[parameters('enableCRR')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.RecoveryServices/vaults', parameters('vaultName'))]"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "copy": {
+        "name": "backupPolicies",
+        "count": "[length(parameters('backupPoliciesArray'))]"
+      },
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "[parameters('backupPoliciesArray')[copyIndex()].name]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "vaultName": {
+            "value": "AzRecoveryVault"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "backupPolicyName": {
+            "value": "[parameters('backupPoliciesArray')[copyIndex()].Name]"
+          },
+          "service": {
+            "value": "[parameters('backupPoliciesArray')[copyIndex()].Service]"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.22.6.54827",
+              "templateHash": "18197635206020013311"
+            }
+          },
+          "parameters": {
+            "vaultName": {
+              "type": "string",
+              "metadata": {
+                "description": "Name of the Vault"
+              }
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "Location for all resources."
+              }
+            },
+            "backupPolicyName": {
+              "type": "string"
+            },
+            "service": {
+              "type": "string",
+              "allowedValues": [
+                "Gold",
+                "Silver",
+                "Bronze"
+              ]
+            },
+            "tags": {
+              "type": "object"
+            }
+          },
+          "variables": {
+            "scheduleRunTimes": [
+              "2023-10-16T05:30:00Z"
+            ]
+          },
+          "resources": [
+            {
+              "condition": "[equals(parameters('service'), 'Gold')]",
+              "type": "Microsoft.RecoveryServices/vaults/backupPolicies",
+              "apiVersion": "2023-01-01",
+              "name": "[format('{0}/{1}', parameters('vaultName'), format('Gold-{0}', parameters('backupPolicyName')))]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "backupManagementType": "AzureIaasVM",
+                "policyType": "V2",
+                "protectedItemsCount": 0,
+                "instantRPDetails": {},
+                "instantRpRetentionRangeInDays": 2,
+                "schedulePolicy": {
+                  "scheduleRunFrequency": "Hourly",
+                  "schedulePolicyType": "SimpleSchedulePolicyV2",
+                  "hourlySchedule": {
+                    "interval": 4,
+                    "scheduleWindowDuration": 24,
+                    "scheduleWindowStartTime": "2023-10-16T05:30:00Z"
+                  }
+                },
+                "retentionPolicy": {
+                  "dailySchedule": {
+                    "retentionTimes": "[variables('scheduleRunTimes')]",
+                    "retentionDuration": {
+                      "count": 180,
+                      "durationType": "Days"
+                    }
+                  },
+                  "weeklySchedule": {
+                    "daysOfTheWeek": [
+                      "Sunday",
+                      "Tuesday",
+                      "Thursday"
+                    ],
+                    "retentionTimes": "[variables('scheduleRunTimes')]",
+                    "retentionDuration": {
+                      "count": 24,
+                      "durationType": "Weeks"
+                    }
+                  },
+                  "monthlySchedule": {
+                    "retentionScheduleFormatType": "Daily",
+                    "retentionScheduleDaily": {
+                      "daysOfTheMonth": [
+                        {
+                          "date": 1,
+                          "isLast": false
+                        }
+                      ]
+                    },
+                    "retentionTimes": "[variables('scheduleRunTimes')]",
+                    "retentionDuration": {
+                      "count": 60,
+                      "durationType": "Months"
+                    }
+                  },
+                  "yearlySchedule": {
+                    "retentionScheduleFormatType": "Daily",
+                    "monthsOfYear": [
+                      "January",
+                      "March",
+                      "August"
+                    ],
+                    "retentionScheduleDaily": {
+                      "daysOfTheMonth": [
+                        {
+                          "date": 1,
+                          "isLast": false
+                        }
+                      ]
+                    },
+                    "retentionTimes": "[variables('scheduleRunTimes')]",
+                    "retentionDuration": {
+                      "count": 10,
+                      "durationType": "Years"
+                    }
+                  },
+                  "retentionPolicyType": "LongTermRetentionPolicy"
+                },
+                "timeZone": "UTC",
+                "tieringPolicy": {
+                  "archivedRP": {
+                    "tieringMode": "DoNotTier",
+                    "duration": 0,
+                    "durationType": "Invalid"
+                  }
+                }
+              }
+            },
+            {
+              "condition": "[equals(parameters('service'), 'Silver')]",
+              "type": "Microsoft.RecoveryServices/vaults/backupPolicies",
+              "apiVersion": "2023-01-01",
+              "name": "[format('{0}/{1}', parameters('vaultName'), format('Silver-{0}', parameters('backupPolicyName')))]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "backupManagementType": "AzureIaasVM",
+                "instantRpRetentionRangeInDays": 2,
+                "schedulePolicy": {
+                  "scheduleRunFrequency": "Daily",
+                  "schedulePolicyType": "SimpleSchedulePolicy",
+                  "scheduleRunTimes": "[variables('scheduleRunTimes')]"
+                },
+                "retentionPolicy": {
+                  "dailySchedule": {
+                    "retentionTimes": "[variables('scheduleRunTimes')]",
+                    "retentionDuration": {
+                      "count": 180,
+                      "durationType": "Days"
+                    }
+                  },
+                  "weeklySchedule": {
+                    "daysOfTheWeek": [
+                      "Sunday",
+                      "Tuesday",
+                      "Thursday"
+                    ],
+                    "retentionTimes": "[variables('scheduleRunTimes')]",
+                    "retentionDuration": {
+                      "count": 21,
+                      "durationType": "Weeks"
+                    }
+                  },
+                  "monthlySchedule": {
+                    "retentionScheduleFormatType": "Daily",
+                    "retentionScheduleDaily": {
+                      "daysOfTheMonth": [
+                        {
+                          "date": 1,
+                          "isLast": false
+                        }
+                      ]
+                    },
+                    "retentionTimes": "[variables('scheduleRunTimes')]",
+                    "retentionDuration": {
+                      "count": 2,
+                      "durationType": "Months"
+                    }
+                  },
+                  "yearlySchedule": {
+                    "retentionScheduleFormatType": "Daily",
+                    "monthsOfYear": [
+                      "January",
+                      "March",
+                      "August"
+                    ],
+                    "retentionScheduleDaily": {
+                      "daysOfTheMonth": [
+                        {
+                          "date": 1,
+                          "isLast": false
+                        }
+                      ]
+                    },
+                    "retentionTimes": "[variables('scheduleRunTimes')]",
+                    "retentionDuration": {
+                      "count": 4,
+                      "durationType": "Years"
+                    }
+                  },
+                  "retentionPolicyType": "LongTermRetentionPolicy"
+                },
+                "timeZone": "UTC"
+              }
+            },
+            {
+              "condition": "[equals(parameters('service'), 'Bronze')]",
+              "type": "Microsoft.RecoveryServices/vaults/backupPolicies",
+              "apiVersion": "2023-01-01",
+              "name": "[format('{0}/{1}', parameters('vaultName'), format('Bronze-{0}', parameters('backupPolicyName')))]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "backupManagementType": "AzureIaasVM",
+                "instantRpRetentionRangeInDays": 5,
+                "schedulePolicy": {
+                  "scheduleRunFrequency": "Weekly",
+                  "schedulePolicyType": "SimpleSchedulePolicy",
+                  "scheduleRunTimes": "[variables('scheduleRunTimes')]",
+                  "scheduleRunDays": [
+                    "Sunday",
+                    "Tuesday",
+                    "Thursday"
+                  ]
+                },
+                "retentionPolicy": {
+                  "weeklySchedule": {
+                    "daysOfTheWeek": [
+                      "Sunday",
+                      "Tuesday",
+                      "Thursday"
+                    ],
+                    "retentionTimes": "[variables('scheduleRunTimes')]",
+                    "retentionDuration": {
+                      "count": 21,
+                      "durationType": "Weeks"
+                    }
+                  },
+                  "monthlySchedule": {
+                    "retentionScheduleFormatType": "Weekly",
+                    "retentionScheduleDaily": {
+                      "daysOfTheMonth": [
+                        {
+                          "date": 1,
+                          "isLast": false
+                        }
+                      ]
+                    },
+                    "retentionScheduleWeekly": {
+                      "daysOfTheWeek": [
+                        "Sunday",
+                        "Tuesday"
+                      ],
+                      "weeksOfTheMonth": [
+                        "First",
+                        "Third"
+                      ]
+                    },
+                    "retentionTimes": "[variables('scheduleRunTimes')]",
+                    "retentionDuration": {
+                      "count": 60,
+                      "durationType": "Months"
+                    }
+                  },
+                  "yearlySchedule": {
+                    "retentionScheduleFormatType": "Weekly",
+                    "monthsOfYear": [
+                      "January",
+                      "March",
+                      "August"
+                    ],
+                    "retentionScheduleDaily": {
+                      "daysOfTheMonth": [
+                        {
+                          "date": 1,
+                          "isLast": false
+                        }
+                      ]
+                    },
+                    "retentionScheduleWeekly": {
+                      "daysOfTheWeek": [
+                        "Sunday",
+                        "Tuesday"
+                      ],
+                      "weeksOfTheMonth": [
+                        "First",
+                        "Third"
+                      ]
+                    },
+                    "retentionTimes": "[variables('scheduleRunTimes')]",
+                    "retentionDuration": {
+                      "count": 10,
+                      "durationType": "Years"
+                    }
+                  },
+                  "retentionPolicyType": "LongTermRetentionPolicy"
+                },
+                "timeZone": "UTC"
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', parameters('vaultName'))]"
+      ]
+    }
+  ]
+}

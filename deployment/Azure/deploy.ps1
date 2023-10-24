@@ -1,5 +1,5 @@
 
-$resourceGroupName  = "AzureBCDR"
+$resourceGroupName = "AzureBCDR"
 $location = "westeurope"
 
 Az login

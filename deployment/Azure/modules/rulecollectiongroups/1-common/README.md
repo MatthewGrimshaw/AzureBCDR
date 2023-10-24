@@ -29,4 +29,4 @@ These are top level common rules that apply to all Azure Management Plane traffi
             'Storage'
             'WindowsAdminCenter'
 
-- Allow URLS for Azure Site Recovery and Azure Backup
+- Allow URLs for Azure Site Recovery and Azure Backup

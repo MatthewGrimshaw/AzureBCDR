@@ -1,9 +1,10 @@
+---
 name: MSDO windows-latest
 on:
   push:
-    branches: [ "main", "*release*", "*Release*" ]
+    branches: ["main", "*release*", "*Release*"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   dfcDevOpsSecurity:
@@ -14,7 +15,6 @@ jobs:
     runs-on: windows-latest
 
     steps:
-
       # Checkout your code repository to scan
     - uses: actions/checkout@v4
 
@@ -24,7 +24,6 @@ jobs:
       id: msdo
       with:
         categories: 'IaC'
-
       # Upload alerts to the Security tab
     - name: Upload alerts to Security tab
       uses: github/codeql-action/upload-sarif@v2

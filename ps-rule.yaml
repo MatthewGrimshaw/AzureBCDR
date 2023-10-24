@@ -11,6 +11,6 @@ rule:
 input:
   pathIgnore:
     # Exclude module files
-    - 'deployment/**/*.bicep'
+    - "deployment/**/*.bicep"
       # Include test files for modules
-    - '!deployment/Azure/.tests/*.tests.bicep'
+    - "!deployment/Azure/.tests/*.tests.bicep"

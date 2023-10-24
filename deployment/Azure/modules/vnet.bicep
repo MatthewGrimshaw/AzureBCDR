@@ -134,7 +134,7 @@ resource networkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2019-11-0
 }
 
 resource vnetNsg 'Microsoft.Network/virtualNetworks@2023-04-01' = if (nsg)  {
-  name: vnetName
+  name: '${vnetName}-withNsg'
   location: location
   tags: tags
   properties: {

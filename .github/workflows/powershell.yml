@@ -7,13 +7,14 @@
 # For more information on PSScriptAnalyzer in general, see
 # https://github.com/PowerShell/PSScriptAnalyzer
 
+---
 name: PSScriptAnalyzer
 
 on:
   push:
-    branches: [ "main", "*release*", "*Release*" ]
+    branches: ["main", "*release*", "*Release*"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
   schedule:
     - cron: '33 22 * * 2'
 
