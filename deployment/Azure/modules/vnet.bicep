@@ -116,6 +116,19 @@ resource networkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2019-11-0
           direction: 'Outbound'
         }
       }
+      {
+        name: 'Deny-hop-outbound'
+        properties: {
+          protocol: '*'
+          sourcePortRange: '*'
+          destinationPortRanges: ['3389','22']
+          sourceAddressPrefix: 'VirtualNetwork'
+          destinationAddressPrefix: '*'
+          access: 'Deny'
+          priority: 200
+          direction: 'Outbound'
+        }
+      }
     ]
   }
 }
