@@ -81,7 +81,7 @@ module vWanDefaultRoutes 'modules/vWanDefaultRoutes.bicep' = {
 }
 
 module vWanNetConnections 'modules/vWanNetConnections.bicep' = [for vnet in vNetsArray: {
-  name: 'connection-${vnet.vnetName}'
+  name: 'connection-${vnet}${uniqueString(resourceGroup().id)}'
   params: {
     vWanHubName: vWanHubName
     vNetName: vnet.vnetName
