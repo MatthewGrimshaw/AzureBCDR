@@ -23,7 +23,7 @@ module resourceGroup '../modules/resource-group.bicep' = {
     resourceGroupName: 'psruleResourceGroupName'
     location: 'westeurope'
     tags:{
-      env: 'prod'
+      env: 'dev'
       }
   }
 }
@@ -37,6 +37,9 @@ module vNets '../modules/vnet.bicep' = [for vnet in vNetsArray:{
     subnetName: vnet.subnetName
     subnetAddressPrefix: vnet.subnetAddressPrefix
     nsg: vnet.nsg
+    tags:{
+      env: 'dev'
+      }
     }
   }
 ]
@@ -46,6 +49,9 @@ module bastion '../modules/bastion.bicep' = {
   params: {
     location: location
     vnetName: 'spoke3'
+    tags:{
+      env: 'dev'
+      }
   }
   dependsOn:  [
     vNets
@@ -57,6 +63,9 @@ module firewallPolicy '../modules/firewall-policy.bicep' = {
   params: {
    name: 'psruleFwPolicyName'
    location: location
+   tags:{
+    env: 'dev'
+    }
    }
 }
 
@@ -78,6 +87,9 @@ module firewall '../modules/firewall.bicep' = {
     firewallLocation: location
     firewallPolicy: firewallPolicy.outputs.id
     vWanHubName: 'psruleVWANHubName'
+    tags:{
+      env: 'dev'
+      }
   }
 }
 
@@ -111,6 +123,10 @@ module recoveryVault '../modules/recoveryVault.bicep' = {
     location: location
     vNetName: 'psruleRecoveryVaultVNetName'
     subnetName: 'psruleRecoveryVaultSubnetName'
+    alertingEmailAddress:'psrulesEmailAddress@email.com'
+    tags:{
+      env: 'dev'
+      } 
   }
 }
 
@@ -121,6 +137,9 @@ module backupPolicies '../modules/backupPolicy.bicep' = [for policy in backupPol
     location : location
     backupPolicyName: policy.Name
     service: policy.Service
+    tags:{
+      env: 'dev'
+      }
   }
   dependsOn: [
     recoveryVault

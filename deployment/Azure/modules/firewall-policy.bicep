@@ -5,10 +5,12 @@ param name string
 ])
 param tier string = 'Standard'
 param location string = resourceGroup().location
+param tags object
 
 resource firewallPolicy 'Microsoft.Network/firewallPolicies@2021-05-01' = {
   name: name
   location: location
+  tags: tags
   properties: {
     sku: {
       tier: tier

@@ -12,7 +12,7 @@ param backupPolicyName string
   'Bronze'
 ])
 param service string
-
+param tags object
 
 var scheduleRunTimes = [
   '2023-10-16T05:30:00Z'

@@ -9,6 +9,8 @@ param vaultName string
 param recoveryVaultVNetName string
 param recoveryVaultSubnetName string
 param backupPoliciesArray array
+param tags object 
+param alertingEmailAddress string
 
 module vNets 'modules/vnet.bicep' = [for vnet in vNetsArray:{
   name: vnet.vnetName
@@ -19,16 +21,17 @@ module vNets 'modules/vnet.bicep' = [for vnet in vNetsArray:{
     subnetName: vnet.subnetName
     subnetAddressPrefix: vnet.subnetAddressPrefix
     nsg: vnet.nsg
+    tags: tags
     }
   }
 ]
-
 
 module bastion 'modules/bastion.bicep' = {
   name: 'bastion'
   params: {
     location: location
     vnetName: 'spoke3'
+    tags: tags
   }
   dependsOn:  [
     vNets
@@ -40,6 +43,7 @@ module firewallPolicy 'modules/firewall-policy.bicep' = {
   params: {
    name: firewallPolicyName
    location: location
+   tags: tags
    }
 }
 
@@ -52,6 +56,7 @@ module vWanHub 'modules/vwan.bicep' = {
     vWanHubAddressPrefix: vWanHubAddressPrefix
     vWanHubLocation: location
     vWanHubName: vWanHubName
+    tags: tags
   }
 }
 
@@ -62,6 +67,7 @@ module firewall 'modules/firewall.bicep' = {
     firewallLocation: location
     firewallPolicy: firewallPolicy.outputs.id
     vWanHubName: vWanHubName
+    tags: tags
   }
 }
 
@@ -96,6 +102,8 @@ module recoveryVault 'modules/recoveryVault.bicep' = {
     location: location
     vNetName: recoveryVaultVNetName
     subnetName: recoveryVaultSubnetName
+    tags: tags
+    alertingEmailAddress: alertingEmailAddress
   }
 }
 
@@ -107,6 +115,7 @@ module backupPolicies 'modules/backupPolicy.bicep' = [for policy in backupPolici
     location : location
     backupPolicyName: policy.Name
     service: policy.Service
+    tags: tags
   }
   dependsOn: [
     recoveryVault

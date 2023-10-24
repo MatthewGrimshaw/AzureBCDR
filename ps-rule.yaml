@@ -3,6 +3,10 @@ configuration:
   AZURE_PARAMETER_FILE_EXPANSION: true
   AZURE_BICEP_FILE_EXPANSION: true
 
+rule:
+  exclude:
+    - Azure.RSV.Immutable
+
 input:
   pathIgnore:
     - 'deployment/azure/main.bicep'

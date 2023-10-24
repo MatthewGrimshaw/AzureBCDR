@@ -10,6 +10,7 @@ resource vWanHubDefaultRouteTable 'Microsoft.Network/virtualHubs/hubRouteTables@
   name: 'defaultRouteTable'
  }
 
+
 resource vNet 'Microsoft.Network/virtualNetworks@2023-04-01' existing =   {
  name: vNetName
 }

@@ -7,6 +7,8 @@ param firewallLocation string
 param tier string = 'Standard'
 param firewallPolicy string
 param vWanHubName string
+param tags object
+
 
 resource vWanHub 'Microsoft.Network/virtualHubs@2021-02-01' existing = {
   name: vWanHubName
@@ -15,6 +17,7 @@ resource vWanHub 'Microsoft.Network/virtualHubs@2021-02-01' existing = {
 resource azureFirewall 'Microsoft.Network/azureFirewalls@2020-05-01' = {
   name: firewallName
   location: firewallLocation
+  tags: tags
   properties: {
     sku: {
       name: 'AZFW_Hub'

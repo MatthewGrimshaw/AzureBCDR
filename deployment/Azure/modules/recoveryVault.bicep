@@ -16,6 +16,8 @@ param location string = resourceGroup().location
 
 param vNetName string
 param subnetName string
+param tags object
+param alertingEmailAddress string
 
 
 var privateEndpointName = 'RecoveryVaultPrivateEndpoint'
@@ -36,6 +38,7 @@ resource resourceSubnet 'Microsoft.Network/virtualNetworks/subnets@2022-01-01'  
 resource recoveryServicesVault 'Microsoft.RecoveryServices/vaults@2023-01-01' = {
   name: vaultName
   location: location
+  tags: tags
   sku: {
     name: skuName
     tier: skuTier
@@ -53,9 +56,22 @@ resource recoveryServicesVault 'Microsoft.RecoveryServices/vaults@2023-01-01' = 
   }
 }
 
+resource recoveryVaultRepicationAlert 'Microsoft.RecoveryServices/vaults/replicationAlertSettings@2022-10-01' = {
+  name: 'replicationAlert'
+  parent: recoveryServicesVault
+  properties: {
+    customEmailAddresses: [
+      alertingEmailAddress
+    ]
+    locale: 'en-US'
+    sendToOwners: 'Send'
+  }
+}
+
 resource privateEndpoint 'Microsoft.Network/privateEndpoints@2021-05-01' = {
   name: privateEndpointName
   location: location
+  tags: tags
   properties: {
     subnet: {
       id: resourceSubnet.id
@@ -78,6 +94,7 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2021-05-01' = {
 resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
   name: privateDNSZoneName
   location: 'global'
+  tags: tags
   properties: {}
 }
 
@@ -85,6 +102,7 @@ resource privateDnsZoneLink 'Microsoft.Network/privateDnsZones/virtualNetworkLin
   parent: privateDnsZone
   name: '${privateDNSZoneName}-link'
   location: 'global'
+  tags: tags
   properties: {
     registrationEnabled: false
     virtualNetwork: {
@@ -114,6 +132,7 @@ resource pvtEndpointDnsGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneG
 resource vaultStorageConfig 'Microsoft.RecoveryServices/vaults/backupstorageconfig@2022-02-01' = {
   parent: recoveryServicesVault
   name: 'vaultstorageconfig'
+  tags: tags
   properties: {
     storageModelType: vaultStorageType
     crossRegionRestoreFlag: enableCRR
