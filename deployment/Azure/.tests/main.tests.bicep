@@ -8,20 +8,25 @@ param vNetsArray array = [
     nsg: true
   }
 ]
-param firewallPolicyName string = 'psruleFwPolicyName'
-param vWanName string = 'psruleVWANName'
-param vWanHubAddressPrefix string = '10.0.0.1'
-param vWanHubName string = 'pasruleVWANHubName'
-param firewallName string = 'psruleFirewallName'
-param vaultName string = 'psruleRecoveryVaultName'
-param recoveryVaultVNetName string = 'psruleRecoveryVaultVNetName'
-param recoveryVaultSubnetName string = 'psruleRecoveryVaultSubnetName'
+param resourceGroupName string = 'psruleResourceGroupName'
 param backupPoliciesArray array = [
   {
     name: 'psruleBackupPolicyName'
     service: 'Gold'
   }
 ]
+
+module resourceGroup '../modules/resource-group.bicep' = {
+  scope: subscription()
+  name: resourceGroupName
+  params: {
+    resourceGroupName: 'psruleResourceGroupName'
+    location: 'westeurope'
+    tags:{
+      env: 'prod'
+      }
+  }
+}
 
 module vNets '../modules/vnet.bicep' = [for vnet in vNetsArray:{
   name: vnet.vnetName
@@ -35,7 +40,6 @@ module vNets '../modules/vnet.bicep' = [for vnet in vNetsArray:{
     }
   }
 ]
-
 
 module bastion '../modules/bastion.bicep' = {
   name: 'bastion'
@@ -51,49 +55,47 @@ module bastion '../modules/bastion.bicep' = {
 module firewallPolicy '../modules/firewall-policy.bicep' = {
   name: 'firewallPolicy'
   params: {
-   name: firewallPolicyName
+   name: 'psruleFwPolicyName'
    location: location
    }
 }
-
 
 module vWanHub '../modules/vwan.bicep' = {
   name: 'vWanHub'
   params: {
     location: location
-    vWanName: vWanName
-    vWanHubAddressPrefix: vWanHubAddressPrefix
+    vWanName: 'psruleVWANName'
+    vWanHubAddressPrefix: '10.0.0.1'
     vWanHubLocation: location
-    vWanHubName: vWanHubName
+    vWanHubName: 'psruleVWANHubName'
   }
 }
 
 module firewall '../modules/firewall.bicep' = {
   name: 'firewall'
   params: {
-    firewallName: firewallName
+    firewallName: 'psruleFirewallName'
     firewallLocation: location
     firewallPolicy: firewallPolicy.outputs.id
-    vWanHubName: vWanHubName
+    vWanHubName: 'psruleVWANHubName'
   }
 }
 
 module vWanDefaultRoutes '../modules/vWanDefaultRoutes.bicep' = {
   name: 'vWanDefaultRoutes'
   params: {
-    vWanHubName:  vWanHubName
-    firewallName: firewallName
+    vWanHubName:  'pasruleVWANHubName'
+    firewallName: 'psruleFirewallName'
   }
   dependsOn: [
     vWanHub
   ]
 }
 
-
 module vWanNetConnections '../modules/vWanNetConnections.bicep' = [for vnet in vNetsArray:{
   name: 'connection-${vnet.vnetName}'
   params: {
-      vWanHubName:  vWanHubName
+      vWanHubName:  'psruleVWANHubName'
       vNetName: vnet.vnetName
     }
     dependsOn: [
@@ -103,15 +105,14 @@ module vWanNetConnections '../modules/vWanNetConnections.bicep' = [for vnet in v
 ]
 
 module recoveryVault '../modules/recoveryVault.bicep' = {
-  name: vaultName
+  name: 'psruleRecoveryVaultName'
   params: {
-    vaultName: vaultName
+    vaultName: 'psruleRecoveryVaultName'
     location: location
-    vNetName: recoveryVaultVNetName
-    subnetName: recoveryVaultSubnetName
+    vNetName: 'psruleRecoveryVaultVNetName'
+    subnetName: 'psruleRecoveryVaultSubnetName'
   }
 }
-
 
 module backupPolicies '../modules/backupPolicy.bicep' = [for policy in backupPoliciesArray:{
   name: policy.name
