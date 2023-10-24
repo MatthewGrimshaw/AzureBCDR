@@ -1,20 +1,4 @@
-param location string = resourceGroup().location
-param vNetsArray array = [
-  {
-    vnetName:  'psrulespoke1-PaaS'
-    vnetAddressPrefixes: ['10.1.0.0/24']
-    subnetName: 'default'
-    subnetAddressPrefix: '10.1.0.0/24'
-    nsg: true
-  }
-]
-
-param backupPoliciesArray array = [
-  {
-    name: 'psruleBackupPolicyName'
-    service: 'Gold'
-  }
-]
+param location string = 'westeurope'
 
 module resourceGroup '../modules/resource-group.bicep' = {
   scope: subscription()
@@ -28,21 +12,20 @@ module resourceGroup '../modules/resource-group.bicep' = {
   }
 }
 
-module vNets '../modules/vnet.bicep' = [for vnet in vNetsArray:{
-  name: vnet.vnetName
+module vNets '../modules/vnet.bicep' = {
+  name: 'psrulespoke1-PaaS'
   params: {
     location: location
-    vnetName: vnet.vnetName
-    vnetAddressPrefixes: vnet.vnetAddressPrefixes
-    subnetName: vnet.subnetName
-    subnetAddressPrefix: vnet.subnetAddressPrefix
-    nsg: vnet.nsg
+    vnetName: 'psrulespoke1-PaaS'
+    vnetAddressPrefixes: ['10.1.0.0/24']
+    subnetName: 'default'
+    subnetAddressPrefix: '10.1.0.0/24'
+    nsg: true
     tags:{
       env: 'dev'
-      }
     }
   }
-]
+}
 
 module bastion '../modules/bastion.bicep' = {
   name: 'bastion'
@@ -107,17 +90,17 @@ module vWanDefaultRoutes '../modules/vWanDefaultRoutes.bicep' = {
   ]
 }
 
-module vWanNetConnections '../modules/vWanNetConnections.bicep' = [for vnet in vNetsArray:{
-  name: 'connection-${vnet.vnetName}'
+module vWanNetConnections '../modules/vWanNetConnections.bicep' = {
+  name: 'connection-psruleVNetName'
   params: {
-      vWanHubName:  'psruleVWANHubName'
-      vNetName: vnet.vnetName
+      vWanHubName: 'psruleVWANHubName'
+      vNetName: 'psruleVNetName'
     }
     dependsOn: [
       vWanHub
     ]
-  }
-]
+}
+
 
 module recoveryVault '../modules/recoveryVault.bicep' = {
   name: 'psruleRecoveryVaultName'
@@ -133,13 +116,13 @@ module recoveryVault '../modules/recoveryVault.bicep' = {
   }
 }
 
-module backupPolicies '../modules/backupPolicy.bicep' = [for policy in backupPoliciesArray:{
-  name: policy.name
+module backupPolicies '../modules/backupPolicy.bicep' = {
+  name: 'psruleBackupPolicyName'
   params: {
     vaultName: 'AzRecoveryVault'
     location : location
-    backupPolicyName: policy.Name
-    service: policy.Service
+    backupPolicyName: 'psruleBackupPolicyName'
+    service: 'Gold'
     tags:{
       env: 'dev'
       }
@@ -148,4 +131,4 @@ module backupPolicies '../modules/backupPolicy.bicep' = [for policy in backupPol
     recoveryVault
   ]
 }
-]
+

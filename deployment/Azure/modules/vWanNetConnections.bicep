@@ -29,7 +29,7 @@ resource vWanNetConnection 'Microsoft.Network/virtualHubs/hubVirtualNetworkConne
         ]
         ids: [
           {
-            id: resourceId('Microsoft.Network/virtualHubs/hubRouteTables', vWanHubName, 'noneRouteTable')
+            id: resourceId('Microsoft.Network/virtualHubs/hubRouteTables', vWanHub.name, 'noneRouteTable')
           }
         ]
       }
