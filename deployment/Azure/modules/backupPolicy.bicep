@@ -26,6 +26,7 @@ resource GoldBackupPolicy 'Microsoft.RecoveryServices/vaults/backupPolicies@2023
   parent: recoveryServicesVault
   name: backupPolicyName
   location: location
+  tags: tags
   properties: {
     backupManagementType: 'AzureIaasVM'
     policyType: 'V2'
@@ -115,6 +116,7 @@ resource SilverBackupPolicy 'Microsoft.RecoveryServices/vaults/backupPolicies@20
   parent: recoveryServicesVault
   name: backupPolicyName
   location: location
+  tags: tags
   properties: {
     backupManagementType: 'AzureIaasVM'
     instantRpRetentionRangeInDays:2
@@ -190,6 +192,7 @@ resource BronzeBackupPolicy 'Microsoft.RecoveryServices/vaults/backupPolicies@20
   parent: recoveryServicesVault
   name: backupPolicyName
   location: location
+  tags: tags
   properties: {
     backupManagementType: 'AzureIaasVM'
     instantRpRetentionRangeInDays: 5
