@@ -1,5 +1,14 @@
 param location string = resourceGroup().location
-param vNetsArray array
+param vNetsArray array = [
+  {
+    vnetName: 'spoke1-PaaS'
+    vnetAddressPrefixes: ['10.1.0.0/24']
+    subnetName: 'default'
+    subnetAddressPrefix: '10.1.0.0/24'
+    nsg: true
+  }
+]
+
 param firewallPolicyName string
 param vWanName string
 param vWanHubAddressPrefix string

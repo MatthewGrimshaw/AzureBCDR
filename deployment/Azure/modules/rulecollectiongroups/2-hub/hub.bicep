@@ -32,7 +32,7 @@ resource hubRuleCollectionGroup 'Microsoft.Network/firewallPolicies/ruleCollecti
               '172.168.0.0/16'
             ]
             sourceIpGroups: []
-            destinationAddresses: ['192.168.0.10']
+            destinationAddresses: [ '192.168.0.10' ]
             destinationIpGroups: []
             destinationFqdns: []
             destinationPorts: [
@@ -53,7 +53,7 @@ resource hubRuleCollectionGroup 'Microsoft.Network/firewallPolicies/ruleCollecti
               '172.168.0.0/16'
             ]
             sourceIpGroups: []
-            destinationAddresses: ['192.168.0.11']
+            destinationAddresses: [ '192.168.0.11' ]
             destinationIpGroups: []
             destinationFqdns: []
             destinationPorts: [
@@ -74,7 +74,7 @@ resource hubRuleCollectionGroup 'Microsoft.Network/firewallPolicies/ruleCollecti
               '172.168.0.0/16'
             ]
             sourceIpGroups: []
-            destinationAddresses: ['10.1.0.0/22']
+            destinationAddresses: [ '10.1.0.0/22' ]
             destinationIpGroups: []
             destinationFqdns: []
             destinationPorts: [

@@ -4,11 +4,11 @@ module resourceGroup '../modules/resource-group.bicep' = {
   scope: subscription()
   name: 'psrulesResourcegroupName'
   params: {
-    resourceGroupName: 'psruleResourceGroupName'
+    resourceGroupName: 'psruleResourceGroupNames'
     location: 'westeurope'
-    tags:{
+    tags: {
       env: 'dev'
-      }
+    }
   }
 }
 
@@ -17,11 +17,11 @@ module vNets '../modules/vnet.bicep' = {
   params: {
     location: location
     vnetName: 'psrulespoke1-PaaS'
-    vnetAddressPrefixes: ['10.1.0.0/24']
+    vnetAddressPrefixes: [ '10.1.0.0/24' ]
     subnetName: 'default'
     subnetAddressPrefix: '10.1.0.0/24'
     nsg: true
-    tags:{
+    tags: {
       env: 'dev'
     }
   }
@@ -32,11 +32,11 @@ module bastion '../modules/bastion.bicep' = {
   params: {
     location: location
     vnetName: 'spoke3'
-    tags:{
+    tags: {
       env: 'dev'
-      }
+    }
   }
-  dependsOn:  [
+  dependsOn: [
     vNets
   ]
 }
@@ -44,12 +44,12 @@ module bastion '../modules/bastion.bicep' = {
 module firewallPolicy '../modules/firewall-policy.bicep' = {
   name: 'firewallPolicy'
   params: {
-   name: 'psruleFwPolicyName'
-   location: location
-   tags:{
-    env: 'dev'
+    name: 'psruleFwPolicyName'
+    location: location
+    tags: {
+      env: 'dev'
     }
-   }
+  }
 }
 
 module vWanHub '../modules/vwan.bicep' = {
@@ -60,9 +60,9 @@ module vWanHub '../modules/vwan.bicep' = {
     vWanHubAddressPrefix: '10.0.0.1'
     vWanHubLocation: location
     vWanHubName: 'psruleVWANHubName'
-    tags:{
+    tags: {
       env: 'dev'
-      }
+    }
   }
 }
 
@@ -73,16 +73,16 @@ module firewall '../modules/firewall.bicep' = {
     firewallLocation: location
     firewallPolicy: firewallPolicy.outputs.id
     vWanHubName: 'psruleVWANHubName'
-    tags:{
+    tags: {
       env: 'dev'
-      }
+    }
   }
 }
 
 module vWanDefaultRoutes '../modules/vWanDefaultRoutes.bicep' = {
   name: 'vWanDefaultRoutes'
   params: {
-    vWanHubName:  'pasruleVWANHubName'
+    vWanHubName: 'pasruleVWANHubName'
     firewallName: 'psruleFirewallName'
   }
   dependsOn: [
@@ -93,14 +93,13 @@ module vWanDefaultRoutes '../modules/vWanDefaultRoutes.bicep' = {
 module vWanNetConnections '../modules/vWanNetConnections.bicep' = {
   name: 'connection-psruleVNetName'
   params: {
-      vWanHubName: 'psruleVWANHubName'
-      vNetName: 'psruleVNetName'
-    }
-    dependsOn: [
-      vWanHub
-    ]
+    vWanHubName: 'psruleVWANHubName'
+    vNetName: 'psruleVNetName'
+  }
+  dependsOn: [
+    vWanHub
+  ]
 }
-
 
 module recoveryVault '../modules/recoveryVault.bicep' = {
   name: 'psruleRecoveryVaultName'
@@ -109,10 +108,10 @@ module recoveryVault '../modules/recoveryVault.bicep' = {
     location: location
     vNetName: 'psruleRecoveryVaultVNetName'
     subnetName: 'psruleRecoveryVaultSubnetName'
-    alertingEmailAddress:'psrulesEmailAddress@email.com'
-    tags:{
+    alertingEmailAddress: 'psrulesEmailAddress@email.com'
+    tags: {
       env: 'dev'
-      } 
+    }
   }
 }
 
@@ -120,15 +119,14 @@ module backupPolicies '../modules/backupPolicy.bicep' = {
   name: 'psruleBackupPolicyName'
   params: {
     vaultName: 'AzRecoveryVault'
-    location : location
+    location: location
     backupPolicyName: 'psruleBackupPolicyName'
     service: 'Gold'
-    tags:{
+    tags: {
       env: 'dev'
-      }
+    }
   }
   dependsOn: [
     recoveryVault
   ]
 }
-

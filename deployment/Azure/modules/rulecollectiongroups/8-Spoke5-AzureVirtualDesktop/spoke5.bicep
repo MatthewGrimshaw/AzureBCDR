@@ -218,7 +218,7 @@ resource vnetRuleCollectionGroup 'Microsoft.Network/firewallPolicies/ruleCollect
             ]
             sourceIpGroups: []
             destinationAddresses: [
-            'WindowsVirtualDesktop'
+              'WindowsVirtualDesktop'
             ]
             destinationIpGroups: []
             destinationFqdns: []

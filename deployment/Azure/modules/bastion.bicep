@@ -11,7 +11,7 @@ param tags object
 // The Bastion Subnet is required to be named 'AzureBastionSubnet'
 var subnetName = 'AzureBastionSubnet'
 
-resource bastionSubnet 'Microsoft.Network/virtualNetworks/subnets@2022-01-01'  existing = {
+resource bastionSubnet 'Microsoft.Network/virtualNetworks/subnets@2022-01-01' existing = {
   name: '${vnetName}/${subnetName}'
 }
 resource publicIpAddressForBastion 'Microsoft.Network/publicIPAddresses@2022-01-01' = {

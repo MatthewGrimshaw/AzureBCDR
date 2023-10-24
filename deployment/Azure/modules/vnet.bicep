@@ -121,7 +121,7 @@ resource networkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2019-11-0
         properties: {
           protocol: '*'
           sourcePortRange: '*'
-          destinationPortRanges: ['3389','22']
+          destinationPortRanges: [ '3389', '22' ]
           sourceAddressPrefix: 'VirtualNetwork'
           destinationAddressPrefix: '*'
           access: 'Deny'
@@ -133,7 +133,7 @@ resource networkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2019-11-0
   }
 }
 
-resource vnetNsg 'Microsoft.Network/virtualNetworks@2023-04-01' = if (nsg)  {
+resource vnetNsg 'Microsoft.Network/virtualNetworks@2023-04-01' = if (nsg) {
   name: '${vnetName}-withNsg'
   location: location
   tags: tags
@@ -143,11 +143,11 @@ resource vnetNsg 'Microsoft.Network/virtualNetworks@2023-04-01' = if (nsg)  {
     }
     subnets: [
       {
-      name: subnetName
-      properties: {
-        addressPrefix: subnetAddressPrefix
-        networkSecurityGroup: {
-          id: networkSecurityGroup.id
+        name: subnetName
+        properties: {
+          addressPrefix: subnetAddressPrefix
+          networkSecurityGroup: {
+            id: networkSecurityGroup.id
           }
         }
       }
@@ -155,7 +155,7 @@ resource vnetNsg 'Microsoft.Network/virtualNetworks@2023-04-01' = if (nsg)  {
   }
 }
 
-resource vnet 'Microsoft.Network/virtualNetworks@2023-04-01' = if (!nsg)  {
+resource vnet 'Microsoft.Network/virtualNetworks@2023-04-01' = if (!nsg) {
   name: vnetName
   location: location
   tags: tags
@@ -165,9 +165,9 @@ resource vnet 'Microsoft.Network/virtualNetworks@2023-04-01' = if (!nsg)  {
     }
     subnets: [
       {
-      name: subnetName
-      properties: {
-        addressPrefix: subnetAddressPrefix
+        name: subnetName
+        properties: {
+          addressPrefix: subnetAddressPrefix
         }
       }
     ]

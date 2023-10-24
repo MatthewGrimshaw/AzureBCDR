@@ -32,7 +32,7 @@ resource GoldBackupPolicy 'Microsoft.RecoveryServices/vaults/backupPolicies@2023
     policyType: 'V2'
     protectedItemsCount: 0
     instantRPDetails: {}
-    instantRpRetentionRangeInDays:2
+    instantRpRetentionRangeInDays: 2
     schedulePolicy: {
       scheduleRunFrequency: 'Hourly'
       schedulePolicyType: 'SimpleSchedulePolicyV2'
@@ -103,11 +103,11 @@ resource GoldBackupPolicy 'Microsoft.RecoveryServices/vaults/backupPolicies@2023
     }
     timeZone: 'UTC'
     tieringPolicy: {
-       archivedRP:{
+      archivedRP: {
         tieringMode: 'DoNotTier'
         duration: 0
         durationType: 'Invalid'
-       }
+      }
     }
   }
 }
@@ -119,11 +119,11 @@ resource SilverBackupPolicy 'Microsoft.RecoveryServices/vaults/backupPolicies@20
   tags: tags
   properties: {
     backupManagementType: 'AzureIaasVM'
-    instantRpRetentionRangeInDays:2
+    instantRpRetentionRangeInDays: 2
     schedulePolicy: {
       scheduleRunFrequency: 'Daily'
       schedulePolicyType: 'SimpleSchedulePolicy'
-      scheduleRunTimes:scheduleRunTimes
+      scheduleRunTimes: scheduleRunTimes
     }
     retentionPolicy: {
       dailySchedule: {
@@ -234,7 +234,7 @@ resource BronzeBackupPolicy 'Microsoft.RecoveryServices/vaults/backupPolicies@20
             'Sunday'
             'Tuesday'
           ]
-          weeksOfTheMonth:[
+          weeksOfTheMonth: [
             'First'
             'Third'
           ]
@@ -265,7 +265,7 @@ resource BronzeBackupPolicy 'Microsoft.RecoveryServices/vaults/backupPolicies@20
             'Sunday'
             'Tuesday'
           ]
-          weeksOfTheMonth:[
+          weeksOfTheMonth: [
             'First'
             'Third'
           ]

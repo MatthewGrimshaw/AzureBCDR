@@ -14,7 +14,7 @@ name: "CodeQL"
 
 on:
   push:
-    branches: ["main", "*release*", "*Release*"]
+  #  branches: ["main", "*release*", "*Release*"]
   pull_request:
     ## disable untill we have some c# code in the repo
 

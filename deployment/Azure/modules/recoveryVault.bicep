@@ -19,10 +19,9 @@ param subnetName string
 param tags object
 param alertingEmailAddress string
 
-
 var privateEndpointName = 'RecoveryVaultPrivateEndpoint'
-var privateDNSZoneName  = 'privatelink.we.backup.windowsazure.com'
-var pvtEndpointDnsGroupName  = '${privateEndpointName}/privateEndpointDnsGroup'
+var privateDNSZoneName = 'privatelink.we.backup.windowsazure.com'
+var pvtEndpointDnsGroupName = '${privateEndpointName}/privateEndpointDnsGroup'
 var skuName = 'RS0'
 var skuTier = 'Standard'
 
@@ -30,7 +29,7 @@ resource vNet 'Microsoft.Network/virtualNetworks@2023-04-01' existing = {
   name: vNetName
 }
 
-resource resourceSubnet 'Microsoft.Network/virtualNetworks/subnets@2022-01-01'  existing = {
+resource resourceSubnet 'Microsoft.Network/virtualNetworks/subnets@2022-01-01' existing = {
   parent: vNet
   name: subnetName
 }
@@ -90,7 +89,6 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2021-05-01' = {
   }
 }
 
-
 resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
   name: privateDNSZoneName
   location: 'global'
@@ -128,7 +126,6 @@ resource pvtEndpointDnsGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneG
   ]
 }
 
-
 resource vaultStorageConfig 'Microsoft.RecoveryServices/vaults/backupstorageconfig@2022-02-01' = {
   parent: recoveryServicesVault
   name: 'vaultstorageconfig'
@@ -138,4 +135,3 @@ resource vaultStorageConfig 'Microsoft.RecoveryServices/vaults/backupstorageconf
     crossRegionRestoreFlag: enableCRR
   }
 }
-
