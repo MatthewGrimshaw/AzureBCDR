@@ -6,9 +6,12 @@ on:
   pull_request:
     branches: ["main"]
 
+permissions:
+  security-events: write
+
 jobs:
   dfcDevOpsSecurity:
-    name: Microsoft Security DevOps Analysis
+    name: Microsoft Security DevOps Analysis.
 
     # MSDO runs on windows-latest.
     # ubuntu-latest and macos-latest supporting coming soon
@@ -24,6 +27,8 @@ jobs:
       id: msdo
       with:
         categories: 'IaC'
+        tools: templateanalyzer
+              
       # Upload alerts to the Security tab
     - name: Upload alerts to Security tab
       uses: github/codeql-action/upload-sarif@v2

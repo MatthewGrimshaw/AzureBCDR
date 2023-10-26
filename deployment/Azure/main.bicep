@@ -1,11 +1,15 @@
 param location string = resourceGroup().location
 param vNetsArray array = [
   {
-    vnetName: 'spoke1-PaaS'
-    vnetAddressPrefixes: ['10.1.0.0/24']
+    vnetName: 'spok-PaaS'
+    vnetAddressPrefixes: ['10.1.0.0//24']
     subnetName: 'default'
-    subnetAddressPrefix: '10.1.0.0/24'
+    subnetAddressPrefix: '10.1.0.0//24'
     nsg: true
+    location: location
+    tags: {
+      env: 'dev'
+    }
   }
 ]
 
