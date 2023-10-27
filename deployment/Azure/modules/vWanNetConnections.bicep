@@ -5,18 +5,18 @@ resource vWanHub 'Microsoft.Network/virtualHubs@2021-02-01' existing = {
   name: vWanHubName
 }
 
-resource vWanHubDefaultRouteTable 'Microsoft.Network/virtualHubs/hubRouteTables@2020-05-01' existing  = {
+resource vWanHubDefaultRouteTable 'Microsoft.Network/virtualHubs/hubRouteTables@2020-05-01' existing = {
   parent: vWanHub
   name: 'defaultRouteTable'
- }
+}
 
-resource vNet 'Microsoft.Network/virtualNetworks@2023-04-01' existing =   {
- name: vNetName
+resource vNet 'Microsoft.Network/virtualNetworks@2023-04-01' existing = {
+  name: vNetName
 }
 
 resource vWanNetConnection 'Microsoft.Network/virtualHubs/hubVirtualNetworkConnections@2020-05-01' = {
   parent: vWanHub
-  name:  'connection-${vNetName}'
+  name: 'connection-${vNetName}'
   properties: {
     routingConfiguration: {
       associatedRouteTable: {
@@ -28,7 +28,7 @@ resource vWanNetConnection 'Microsoft.Network/virtualHubs/hubVirtualNetworkConne
         ]
         ids: [
           {
-            id: resourceId('Microsoft.Network/virtualHubs/hubRouteTables', vWanHubName, 'noneRouteTable')
+            id: resourceId('Microsoft.Network/virtualHubs/hubRouteTables', vWanHub.name, 'noneRouteTable')
           }
         ]
       }

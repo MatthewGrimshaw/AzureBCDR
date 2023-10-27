@@ -12,7 +12,7 @@ param backupPolicyName string
   'Bronze'
 ])
 param service string
-
+param tags object
 
 var scheduleRunTimes = [
   '2023-10-16T05:30:00Z'
@@ -24,14 +24,15 @@ resource recoveryServicesVault 'Microsoft.RecoveryServices/vaults@2023-01-01' ex
 
 resource GoldBackupPolicy 'Microsoft.RecoveryServices/vaults/backupPolicies@2023-01-01' = if (service == 'Gold') {
   parent: recoveryServicesVault
-  name: backupPolicyName
+  name: 'Gold-${backupPolicyName}'
   location: location
+  tags: tags
   properties: {
     backupManagementType: 'AzureIaasVM'
     policyType: 'V2'
     protectedItemsCount: 0
     instantRPDetails: {}
-    instantRpRetentionRangeInDays:2
+    instantRpRetentionRangeInDays: 2
     schedulePolicy: {
       scheduleRunFrequency: 'Hourly'
       schedulePolicyType: 'SimpleSchedulePolicyV2'
@@ -102,26 +103,27 @@ resource GoldBackupPolicy 'Microsoft.RecoveryServices/vaults/backupPolicies@2023
     }
     timeZone: 'UTC'
     tieringPolicy: {
-       archivedRP:{
+      archivedRP: {
         tieringMode: 'DoNotTier'
         duration: 0
         durationType: 'Invalid'
-       }
+      }
     }
   }
 }
 
 resource SilverBackupPolicy 'Microsoft.RecoveryServices/vaults/backupPolicies@2023-01-01' = if (service == 'Silver') {
   parent: recoveryServicesVault
-  name: backupPolicyName
+  name: 'Silver-${backupPolicyName}'
   location: location
+  tags: tags
   properties: {
     backupManagementType: 'AzureIaasVM'
-    instantRpRetentionRangeInDays:2
+    instantRpRetentionRangeInDays: 2
     schedulePolicy: {
       scheduleRunFrequency: 'Daily'
       schedulePolicyType: 'SimpleSchedulePolicy'
-      scheduleRunTimes:scheduleRunTimes
+      scheduleRunTimes: scheduleRunTimes
     }
     retentionPolicy: {
       dailySchedule: {
@@ -188,8 +190,9 @@ resource SilverBackupPolicy 'Microsoft.RecoveryServices/vaults/backupPolicies@20
 
 resource BronzeBackupPolicy 'Microsoft.RecoveryServices/vaults/backupPolicies@2023-01-01' = if (service == 'Bronze') {
   parent: recoveryServicesVault
-  name: backupPolicyName
+  name: 'Bronze-${backupPolicyName}'
   location: location
+  tags: tags
   properties: {
     backupManagementType: 'AzureIaasVM'
     instantRpRetentionRangeInDays: 5
@@ -231,7 +234,7 @@ resource BronzeBackupPolicy 'Microsoft.RecoveryServices/vaults/backupPolicies@20
             'Sunday'
             'Tuesday'
           ]
-          weeksOfTheMonth:[
+          weeksOfTheMonth: [
             'First'
             'Third'
           ]
@@ -262,7 +265,7 @@ resource BronzeBackupPolicy 'Microsoft.RecoveryServices/vaults/backupPolicies@20
             'Sunday'
             'Tuesday'
           ]
-          weeksOfTheMonth:[
+          weeksOfTheMonth: [
             'First'
             'Third'
           ]

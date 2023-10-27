@@ -74,25 +74,25 @@ resource commonRuleCollectionGroup 'Microsoft.Network/firewallPolicies/ruleColle
             ]
             sourceIpGroups: []
             destinationAddresses: [
-            'ApplicationInsightsAvailability'
-            'AppService'
-            'AzureAdvancedThreatProtection'
-            'AzureArcInfrastructure'
-            'AzureAttestation'
-            'AzureBackup'
-            'AzureContainerRegistry'
-            'AzureDevOps'
-            'AzureMonitor'
-            'AzurePlatformDNS'
-            'AzurePlatformLKM'
-            'AzureSiteRecovery'
-            'AzureUpdateDelivery'
-            'EventHub'
-            'Sql'
-            'SqlManagement'
-            'Storage'
-            'WindowsAdminCenter'
-          ]
+              'ApplicationInsightsAvailability'
+              'AppService'
+              'AzureAdvancedThreatProtection'
+              'AzureArcInfrastructure'
+              'AzureAttestation'
+              'AzureBackup'
+              'AzureContainerRegistry'
+              'AzureDevOps'
+              'AzureMonitor'
+              'AzurePlatformDNS'
+              'AzurePlatformLKM'
+              'AzureSiteRecovery'
+              'AzureUpdateDelivery'
+              'EventHub'
+              'Sql'
+              'SqlManagement'
+              'Storage'
+              'WindowsAdminCenter'
+            ]
             destinationIpGroups: []
             destinationFqdns: []
             destinationPorts: [
@@ -180,7 +180,7 @@ resource commonRuleCollectionGroup 'Microsoft.Network/firewallPolicies/ruleColle
             ]
             webCategories: []
             targetFqdns: [
-              '*.blob.core.windows.net'
+              '*.blob.${environment().suffixes.storage}'
             ]
             targetUrls: []
             terminateTLS: false
@@ -196,7 +196,7 @@ resource commonRuleCollectionGroup 'Microsoft.Network/firewallPolicies/ruleColle
             // https://learn.microsoft.com/en-us/azure/site-recovery/azure-to-azure-about-networking
             ruleType: 'ApplicationRule'
             name: 'Authentication'
-            description: 'Allow traffic from all sources to login.microsoftonline.com'
+            description: 'Allow traffic from all sources to ${environment().authentication.loginEndpoint}'
             protocols: [
               {
                 protocolType: 'Https'
@@ -209,7 +209,7 @@ resource commonRuleCollectionGroup 'Microsoft.Network/firewallPolicies/ruleColle
             ]
             webCategories: []
             targetFqdns: [
-              'login.microsoftonline.com'
+              '${environment().authentication.loginEndpoint}'
             ]
             targetUrls: []
             terminateTLS: false
@@ -283,7 +283,7 @@ resource commonRuleCollectionGroup 'Microsoft.Network/firewallPolicies/ruleColle
             // https://learn.microsoft.com/en-us/azure/site-recovery/azure-to-azure-about-networking
             ruleType: 'ApplicationRule'
             name: 'AzureRecoveryVault'
-            description: 'Allow traffic from all sources to *.vault.azure.net'
+            description: 'Allow traffic from all sources to *.${environment().suffixes.keyvaultDns}'
             protocols: [
               {
                 protocolType: 'Https'
@@ -296,7 +296,7 @@ resource commonRuleCollectionGroup 'Microsoft.Network/firewallPolicies/ruleColle
             ]
             webCategories: []
             targetFqdns: [
-              '*.vault.azure.net'
+              '*.${environment().suffixes.keyvaultDns}'
             ]
             targetUrls: []
             terminateTLS: false

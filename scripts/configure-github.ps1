@@ -12,21 +12,21 @@ configure-github.ps1 -tenantId "00000000-0000-0000-0000-000000000000" -subscript
 param(
     [Parameter(Mandatory = $true)]
     [String]
-        $tenantId,
+    $tenantId,
     [Parameter(Mandatory = $true)]
     [String]
-        $subscriptionId,
+    $subscriptionId,
     [Parameter(Mandatory = $true)]
     [String]
-        $appName,
+    $appName,
     [String]
-        $githubOrgName,
+    $githubOrgName,
     [Parameter(Mandatory = $true)]
     [String]
-        $githubRepoName,
+    $githubRepoName,
     [Parameter(Mandatory = $true)]
     [String]
-        $githubPat
+    $githubPat
 )
 
 # log in to Azure
@@ -56,7 +56,7 @@ New-AzADAppFederatedCredential -ApplicationObjectId $clientId -Audience api://Az
 New-AzADAppFederatedCredential -ApplicationObjectId $clientId -Audience api://AzureADTokenExchange -Issuer 'https://token.actions.githubusercontent.com' -Name "$($githubRepoName)-Branch" -Subject "repo:$($githubOrgName)/$($githubRepoName):ref:refs/heads/branch"
 
 #install PSSodium if missing
-If(!(Get-Module -ListAvailable -Name PSSodium)){
+If (!(Get-Module -ListAvailable -Name PSSodium)) {
     install-module PSSodium
 }
 
@@ -66,7 +66,7 @@ $clientAppId = (Get-AzADApplication -DisplayName $appName).AppId
 $subscriptionId = (Get-AzContext).Subscription.Id
 $tenantId = (Get-AzContext).Subscription.TenantId
 
-$headers = @{Authorization = "token " + $githubPat}
+$headers = @{Authorization = "token " + $githubPat }
 
 Invoke-RestMethod –Method get –Uri "https://api.github.com/repos/$($githubOrgName)/$($githubRepoName)/actions/secrets" –Headers $headers
 

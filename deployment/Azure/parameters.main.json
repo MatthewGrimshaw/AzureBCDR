@@ -66,7 +66,17 @@
           "service": "Bronze"
         }
       ]
-    }
+     },
+     "tags": {
+        "value": {
+          "environment": "dev",
+          "costCenter": "matthew",
+          "project": "az-bcdr"
+        }
+     },
+     "alertingEmailAddress" : {
+        "value": "Matthew.Grimshaw@Microsoft.com"
+     }
   }
 }
 

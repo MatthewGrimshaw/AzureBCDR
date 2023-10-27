@@ -1,7 +1,5 @@
-
 param vWanHubName string
 param firewallName string
-
 
 resource vWanHub 'Microsoft.Network/virtualHubs@2021-02-01' existing = {
   name: vWanHubName

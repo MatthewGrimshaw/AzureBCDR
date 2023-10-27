@@ -1,0 +1,16 @@
+configuration:
+  # Enable automatic expansion of Azure parameter and BICEP files
+  AZURE_PARAMETER_FILE_EXPANSION: true
+  AZURE_BICEP_FILE_EXPANSION: true
+  AZURE_BICEP_FILE_EXPANSION_TIMEOUT: 30
+
+rule:
+  exclude:
+    - Azure.RSV.Immutable
+
+input:
+  pathIgnore:
+    # Exclude module files
+    - "deployment/**/*.bicep"
+      # Include test files for modules
+    - "!deployment/Azure/.tests/*.tests.bicep"

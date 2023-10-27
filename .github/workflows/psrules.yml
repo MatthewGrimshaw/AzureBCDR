@@ -1,0 +1,33 @@
+---
+name: PSRules
+
+on:
+  push:
+    branches: [ "main", "*release*", "*Release*" ]
+    paths:
+      -deployment/Azure/**
+  pull_request:
+    branches:
+      - main
+    paths:
+      - deployment/Azure/**
+  workflow_dispatch:
+    
+permissions:
+  id-token: write
+  contents: read
+    
+
+jobs:
+  validate_prod:
+    name: Validate Prod
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+    
+      # Analyze Azure resources using PSRule for Azure
+      - name: Analyze Azure template files
+        uses: microsoft/ps-rule@v2.9.0
+        with:
+          modules: 'PSRule.Rules.Azure'

@@ -17,6 +17,7 @@ Subscription                         ResourceGroup          Name          Mappin
 ```
 
 ## `azfw-mapping` tagged spokes by Location
+
 ```text
 
    Location: northeurope
@@ -28,7 +29,6 @@ Subscription                         ResourceGroup          Name          Mappin
 67b24150-18e9-4c69-995f-e68c06ad5fc8 rg-azure-firewall-demo vnet-spoke001 spoke001 northeurope
 
 ```
-
 
 ## All spokes by Subscription
 
@@ -45,6 +45,7 @@ Subscription                         ResourceGroup          Name          Mappin
 ```
 
 ## All spokes by Location
+
 ```text
 
    Location: northeurope
@@ -56,4 +57,3 @@ Subscription                         ResourceGroup          Name          Mappin
 67b24150-18e9-4c69-995f-e68c06ad5fc8 rg-azure-firewall-demo vnet-spoke001 spoke001 northeurope
 
 ```
-

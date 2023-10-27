@@ -2,7 +2,7 @@
 
 These are rules specific to individual spoke virtual networks.
 
-You can see mapping of `subscription/resource group/vnet` 
+You can see mapping of `subscription/resource group/vnet`
 to identifiers used in firewall in [here](spokes.md).
 
 ## All spokes
